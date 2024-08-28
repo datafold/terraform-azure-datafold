@@ -34,3 +34,15 @@ output "postgres_host" {
 output "postgres_username" {
   value = module.database.postgres_username
 }
+
+output "azure_blob_account_name" {
+  value = module.clickhouse_backup.azure_blob_account_name
+}
+
+output "azure_blob_account_key" {
+  value = module.clickhouse_backup.azure_blob_account_key
+}
+
+output "azure_blob_container" {
+  value = module.clickhouse_backup.azure_blob_container
+}
