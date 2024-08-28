@@ -1,5 +1,5 @@
 output "cloud_provider" {
-  value = "azure"
+  value       = "azure"
   description = "A string describing the type of cloud provider to be passed onto the helm charts"
 }
 
@@ -8,7 +8,7 @@ output "vpc_cidr" {
 }
 
 output "domain_name" {
-  value = module.load_balancer.domain_name
+  value = var.domain_name
 }
 
 output "cluster_name" {
@@ -16,7 +16,7 @@ output "cluster_name" {
 }
 
 output "load_balancer_ips" {
-  value = module.load_balancer.load_balancer_ips
+  value = module.networking.public_ip.ip_address
 }
 
 output "postgres_database_name" {

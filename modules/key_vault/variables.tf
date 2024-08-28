@@ -34,3 +34,8 @@ variable "identity_object_id" {
   type        = string
   description = "The principal ID of the identity"
 }
+
+variable "domain_name" {
+  type        = string
+  description = "The domain name for the load balancer"
+}

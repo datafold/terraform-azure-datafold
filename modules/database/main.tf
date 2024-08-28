@@ -10,9 +10,9 @@ resource "azurerm_postgresql_flexible_server" "example" {
   administrator_login           = var.database_username
   administrator_password        = random_password.db_password.result
   auto_grow_enabled             = true
-  sku_name                      = "GP_Standard_D2s_v3"
-  backup_retention_days         = 7
-  storage_mb                    = 32768
+  sku_name                      = var.database_sku
+  backup_retention_days         = var.database_backup_retention_days
+  storage_mb                    = var.database_storage_mb
 
   tags = var.tags
 }
@@ -24,7 +24,7 @@ resource "azurerm_postgresql_flexible_server_database" "example" {
   charset   = "utf8"
 
   # # prevent the possibility of accidental data loss
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
+  lifecycle {
+    prevent_destroy = true
+  }
 }

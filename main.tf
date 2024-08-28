@@ -19,32 +19,6 @@ module "networking" {
   jumpbox_custom_data                   = var.jumpbox_custom_data
 }
 
-module "load_balancer" {
-  source = "./modules/load_balancer"
-
-  deployment_name     = var.deployment_name
-  resource_group_name = data.azurerm_resource_group.default.name
-  location            = data.azurerm_resource_group.default.location
-
-  app_gw_subnet = module.networking.app_gw_subnet
-
-  private_ip_address = var.gw_private_ip_address
-}
-
-module "database" {
-  source = "./modules/database"
-
-  deployment_name     = var.deployment_name
-  resource_group_name = data.azurerm_resource_group.default.name
-  location            = data.azurerm_resource_group.default.location
-
-  database_subnet          = module.networking.database_subnet
-  private_dns_zone_id      = module.networking.database_private_dns_zone_id
-  database_username        = var.database_username
-  database_name            = var.database_name
-  postgresql_major_version = var.postgresql_major_version
-}
-
 module "identity" {
   source = "./modules/identity"
 
@@ -61,6 +35,42 @@ module "key_vault" {
   location            = data.azurerm_resource_group.default.location
 
   identity_object_id = module.identity.identity.principal_id
+
+  domain_name = var.domain_name
+}
+
+module "load_balancer" {
+  source = "./modules/load_balancer"
+
+  deployment_name     = var.deployment_name
+  resource_group_name = data.azurerm_resource_group.default.name
+  location            = data.azurerm_resource_group.default.location
+
+  app_gw_subnet = module.networking.app_gw_subnet
+  ssl_cert_id   = module.key_vault.ssl_cert_id
+  public_ip     = module.networking.public_ip
+  identity      = module.identity.identity
+
+  private_ip_address = var.gw_private_ip_address
+  domain_name        = var.domain_name
+}
+
+module "database" {
+  source = "./modules/database"
+
+  deployment_name     = var.deployment_name
+  resource_group_name = data.azurerm_resource_group.default.name
+  location            = data.azurerm_resource_group.default.location
+
+  database_subnet     = module.networking.database_subnet
+  private_dns_zone_id = module.networking.database_private_dns_zone_id
+
+  database_username              = var.database_username
+  database_name                  = var.database_name
+  database_sku                   = var.database_sku
+  database_backup_retention_days = var.database_backup_retention_days
+  database_storage_mb            = var.database_storage_mb
+  postgresql_major_version       = var.postgresql_major_version
 }
 
 module "aks" {

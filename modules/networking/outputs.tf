@@ -25,3 +25,7 @@ output "vpc_cidr" {
 output "database_private_dns_zone_id" {
   value = azurerm_private_dns_zone.database.id
 }
+
+output "public_ip" {
+  value = azurerm_public_ip.default
+}

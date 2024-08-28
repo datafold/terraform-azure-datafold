@@ -37,3 +37,21 @@ variable "private_ip_address" {
   type        = string
   description = "The private IP address of the load balancer"
 }
+
+variable "ssl_cert_id" {
+  type        = string
+  description = "The ID of the SSL certificate to use for the load balancer"
+}
+
+variable "public_ip" {
+  type = object({ id = string })
+}
+
+variable "identity" {
+  type = object({ id = string })
+}
+
+variable "domain_name" {
+  type        = string
+  description = "The domain name for the load balancer"
+}

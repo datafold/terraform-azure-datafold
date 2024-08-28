@@ -44,7 +44,7 @@ variable "location" {
 variable "vpc_cidrs" {
   description = "The address space for the virtual network"
   type        = list(string)
-  default     = ["10.0.0.0/16"]
+  default     = ["10.20.0.0/16"]
 }
 
 variable "virtual_network_tags" {
@@ -111,6 +111,11 @@ variable "gw_private_ip_address" {
   default     = "10.0.9.10"
 }
 
+variable "domain_name" {
+  description = "The domain name for the load balancer. E.g. azure-dev.datafold.io"
+  type        = string
+}
+
 # ╺┳┓┏━┓╺┳╸┏━┓┏┓ ┏━┓┏━┓┏━╸
 #  ┃┃┣━┫ ┃ ┣━┫┣┻┓┣━┫┗━┓┣╸
 # ╺┻┛╹ ╹ ╹ ╹ ╹┗━┛╹ ╹┗━┛┗━╸
@@ -126,6 +131,25 @@ variable "database_name" {
   default     = "datafold"
   description = "Postgres database name"
 }
+
+variable "database_sku" {
+  type        = string
+  default     = "GP_Standard_D2s_v3"
+  description = "PostgreSQL SKU"
+}
+
+variable "database_backup_retention_days" {
+  type        = number
+  default     = 7
+  description = "PostgreSQL backup retention days"
+}
+
+variable "database_storage_mb" {
+  type        = number
+  default     = 32768
+  description = "PostgreSQL storage in MB. One of a predetermined set of values, see: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#storage_mb"
+}
+
 
 variable "postgresql_major_version" {
   type        = string
