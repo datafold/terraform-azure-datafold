@@ -15,10 +15,14 @@ resource "azurerm_kubernetes_cluster" "default" {
   default_node_pool {
     max_pods                    = var.max_pods
     name                        = var.node_pool_name
-    node_count                  = var.node_pool_node_count
     temporary_name_for_rotation = "rotating"
     vm_size                     = var.node_pool_vm_size
     vnet_subnet_id              = var.aks_subnet.id
+
+    enable_auto_scaling = true
+    max_count           = 2
+    min_count           = 1
+    node_count          = var.node_pool_node_count
 
     upgrade_settings {
       max_surge = "10%" // Otherwise TF wants to set it back to `null`
@@ -46,6 +50,7 @@ resource "azurerm_kubernetes_cluster" "default" {
       oidc_issuer_enabled,
       oidc_issuer_url,
       workload_identity_enabled,
+      default_node_pool[0].node_count,
     ]
   }
 }
