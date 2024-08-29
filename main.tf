@@ -34,7 +34,7 @@ module "key_vault" {
   resource_group_name = data.azurerm_resource_group.default.name
   location            = data.azurerm_resource_group.default.location
 
-  identity_object_id = module.identity.identity.principal_id
+  identity = module.identity.identity
 
   domain_name = var.domain_name
 }
@@ -53,6 +53,7 @@ module "load_balancer" {
 
   private_ip_address = var.gw_private_ip_address
   domain_name        = var.domain_name
+  ssl_cert_name      = var.ssl_cert_name
 }
 
 module "database" {

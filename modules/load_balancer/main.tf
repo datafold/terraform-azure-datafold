@@ -90,17 +90,22 @@ resource "azurerm_application_gateway" "default" {
 
   ssl_certificate {
     key_vault_secret_id = var.ssl_cert_id
-    name                = "ssl"
+    name                = var.ssl_cert_name
   }
 
   lifecycle {
     # K8S will be changing all of these settings so we ignore them.
+    # We really only needed this resource to assign a known public IP.
     ignore_changes = [
       request_routing_rule,
       probe,
       backend_http_settings,
       backend_address_pool,
-      tags
+      url_path_map,
+      frontend_port,
+      http_listener,
+      private_link_configuration,
+      tags,
     ]
   }
 }

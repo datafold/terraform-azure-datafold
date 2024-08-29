@@ -116,6 +116,11 @@ variable "domain_name" {
   type        = string
 }
 
+variable "ssl_cert_name" {
+  description = "The name of the SSL certificate to use for the load balancer. This needs to be referenced by the k8s azure-application-gateway ingress config."
+  type        = string
+}
+
 # ╺┳┓┏━┓╺┳╸┏━┓┏┓ ┏━┓┏━┓┏━╸
 #  ┃┃┣━┫ ┃ ┣━┫┣┻┓┣━┫┗━┓┣╸
 # ╺┻┛╹ ╹ ╹ ╹ ╹┗━┛╹ ╹┗━┛┗━╸

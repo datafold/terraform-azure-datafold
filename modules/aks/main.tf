@@ -41,7 +41,12 @@ resource "azurerm_kubernetes_cluster" "default" {
   tags = var.tags
 
   lifecycle {
-    ignore_changes = [microsoft_defender]
+    ignore_changes = [
+      microsoft_defender,
+      oidc_issuer_enabled,
+      oidc_issuer_url,
+      workload_identity_enabled,
+    ]
   }
 }
 
