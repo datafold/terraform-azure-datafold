@@ -5,7 +5,6 @@ resource "azurerm_kubernetes_cluster" "default" {
   dns_prefix          = "${var.deployment_name}-k8s"
   sku_tier            = var.sku_tier
 
-  automatic_channel_upgrade           = "stable"
   private_cluster_enabled             = true
   private_cluster_public_fqdn_enabled = true
 
@@ -31,6 +30,7 @@ resource "azurerm_kubernetes_cluster" "default" {
     identity_ids = [var.identity.id]
   }
 
+  # Note: Network is set to Azure CNI, which means that the pods will gain their IP from the VNET (aks_subnet)
   network_profile {
     network_plugin    = "azure"
     load_balancer_sku = "standard"
@@ -41,7 +41,12 @@ resource "azurerm_kubernetes_cluster" "default" {
   tags = var.tags
 
   lifecycle {
-    ignore_changes = [microsoft_defender]
+    ignore_changes = [
+      microsoft_defender,
+      oidc_issuer_enabled,
+      oidc_issuer_url,
+      workload_identity_enabled,
+    ]
   }
 }
 

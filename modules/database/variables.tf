@@ -47,6 +47,24 @@ variable "database_subnet" {
   })
 }
 
+variable "database_sku" {
+  type        = string
+  default     = "GP_Standard_D2s_v3"
+  description = "PostgreSQL SKU"
+}
+
+variable "database_backup_retention_days" {
+  type        = number
+  default     = 7
+  description = "PostgreSQL backup retention days"
+}
+
+variable "database_storage_mb" {
+  type        = number
+  default     = 32768
+  description = "PostgreSQL storage in MB. One of a predetermined set of values, see: https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#storage_mb"
+}
+
 variable "private_dns_zone_id" {
   type        = string
   description = "The ID of the private DNS zone"

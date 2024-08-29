@@ -1,23 +1,9 @@
-resource "azurerm_public_ip" "default" {
-  name                = "${var.deployment_name}-public-ip"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  sku                 = "Standard"
-  allocation_method   = "Static"
-  domain_name_label   = var.deployment_name
-
-  tags = var.tags
-}
-
 locals {
   backend_address_pool_name      = "${var.deployment_name}-beap"
-  frontend_port_name             = "${var.deployment_name}-feport"
   frontend_ip_configuration_name = "${var.deployment_name}-feip"
   gateway_ip_configuration_name  = "${var.deployment_name}-gwip"
-  http_setting_name              = "${var.deployment_name}-be-htst"
-  listener_name                  = "${var.deployment_name}-httplstn"
-  request_routing_rule_name      = "${var.deployment_name}-rqrt"
-  redirect_configuration_name    = "${var.deployment_name}-rdrcfg"
+  http_setting_name              = "${var.deployment_name}-be-htst-http"
+  request_routing_rule_name_http = "${var.deployment_name}-rqrt-http"
   app_gateway_name               = "${var.deployment_name}-ag-private-link"
 }
 
@@ -30,10 +16,10 @@ resource "azurerm_application_gateway" "default" {
 
   tags = var.tags
 
-  # identity {
-  #   type         = "UserAssigned"
-  #   identity_ids = [azurerm_user_assigned_identity.default.id]
-  # }
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [var.identity.id]
+  }
 
   sku {
     name = "Standard_v2"
@@ -51,26 +37,13 @@ resource "azurerm_application_gateway" "default" {
   }
 
   frontend_port {
-    name = local.frontend_port_name
-    port = 80
-  }
-
-  frontend_port {
-    name = "https"
+    name = "port_443"
     port = 443
   }
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.default.id
-  }
-
-  frontend_ip_configuration {
-    name                            = "${local.frontend_ip_configuration_name}-private"
-    subnet_id                       = var.app_gw_subnet.id
-    private_ip_address_allocation   = "Static"
-    private_ip_address              = var.private_ip_address
-    private_link_configuration_name = "${var.deployment_name}-private-link"
+    public_ip_address_id = var.public_ip.id
   }
 
   backend_address_pool {
@@ -86,19 +59,21 @@ resource "azurerm_application_gateway" "default" {
   }
 
   http_listener {
-    name                           = local.listener_name
+    name                           = "https"
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = local.frontend_port_name
-    protocol                       = "Http"
+    frontend_port_name             = "port_443"
+    protocol                       = "Https"
+    require_sni                    = "false"
+    ssl_certificate_name           = "ssl"
   }
 
   request_routing_rule {
-    name                       = local.request_routing_rule_name
+    name                       = local.request_routing_rule_name_http
     rule_type                  = "Basic"
-    http_listener_name         = local.listener_name
+    http_listener_name         = "https"
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
-    priority                   = 1
+    priority                   = 100
   }
 
   private_link_configuration {
@@ -112,36 +87,25 @@ resource "azurerm_application_gateway" "default" {
     }
   }
 
-  http_listener {
-    name                           = "${local.listener_name}-private"
-    frontend_ip_configuration_name = "${local.frontend_ip_configuration_name}-private"
-    frontend_port_name             = local.frontend_port_name
-    protocol                       = "Http"
-  }
 
-  request_routing_rule {
-    name                       = "${local.request_routing_rule_name}-private"
-    rule_type                  = "Basic"
-    http_listener_name         = "${local.listener_name}-private"
-    backend_address_pool_name  = local.backend_address_pool_name
-    backend_http_settings_name = local.http_setting_name
-    priority                   = 2
+  ssl_certificate {
+    key_vault_secret_id = var.ssl_cert_id
+    name                = var.ssl_cert_name
   }
 
   lifecycle {
     # K8S will be changing all of these settings so we ignore them.
     # We really only needed this resource to assign a known public IP.
     ignore_changes = [
-      ssl_certificate,
       request_routing_rule,
       probe,
+      backend_http_settings,
+      backend_address_pool,
       url_path_map,
       frontend_port,
       http_listener,
-      backend_http_settings,
-      backend_address_pool,
       private_link_configuration,
-      tags
+      tags,
     ]
   }
 }

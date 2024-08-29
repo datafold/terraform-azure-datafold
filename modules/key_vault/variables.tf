@@ -30,7 +30,11 @@ variable "tags" {
 # ┣┻┓┣╸ ┗┳┛   ┃┏┛┣━┫┃ ┃┃   ┃
 # ╹ ╹┗━╸ ╹    ┗┛ ╹ ╹┗━┛┗━╸ ╹
 
-variable "identity_object_id" {
+variable "identity" {
+  type = object({ id = string, principal_id = string })
+}
+
+variable "domain_name" {
   type        = string
-  description = "The principal ID of the identity"
+  description = "The domain name for the load balancer"
 }

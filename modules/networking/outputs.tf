@@ -19,9 +19,13 @@ output "app_gw_subnet" {
 }
 
 output "vpc_cidr" {
-  value = azurerm_virtual_network.vnet.address_space
+  value = azurerm_virtual_network.vnet.address_space[0]
 }
 
 output "database_private_dns_zone_id" {
   value = azurerm_private_dns_zone.database.id
+}
+
+output "public_ip" {
+  value = azurerm_public_ip.default
 }
