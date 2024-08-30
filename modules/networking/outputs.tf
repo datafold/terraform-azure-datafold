@@ -10,6 +10,10 @@ output "app_subnet" {
   value = azurerm_subnet.app_subnet
 }
 
+output "private_endpoint_storage_subnet" {
+  value = azurerm_subnet.private_endpoint_storage
+}
+
 output "database_subnet" {
   value = azurerm_subnet.database_subnet
 }

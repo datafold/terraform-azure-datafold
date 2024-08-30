@@ -74,6 +74,18 @@ module "database" {
   postgresql_major_version       = var.postgresql_major_version
 }
 
+module "clickhouse_backup" {
+  source = "./modules/clickhouse_backup"
+
+  deployment_name     = var.deployment_name
+  resource_group_name = data.azurerm_resource_group.default.name
+  location            = data.azurerm_resource_group.default.location
+
+  vpc                             = module.networking.vpc
+  private_endpoint_storage_subnet = module.networking.private_endpoint_storage_subnet
+  identity                        = module.identity.identity
+}
+
 module "aks" {
   source = "./modules/aks"
 
