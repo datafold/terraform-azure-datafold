@@ -1,0 +1,14 @@
+global:
+  datadog:
+    env: test
+    install: false
+  operator:
+    allowRollback: true
+    releaseChannel: stable
+    backupCronSchedule: 0 1 * * *
+    maintenanceWindow: ""
+postgres:
+  install: false
+nginx:
+  ingress:
+    deploy: true
