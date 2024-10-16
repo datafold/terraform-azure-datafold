@@ -38,3 +38,17 @@ variable "domain_name" {
   type        = string
   description = "The domain name for the load balancer"
 }
+
+# ┏━╸┏━╸┏━┓╺┳╸
+# ┃  ┣╸ ┣┳┛ ┃
+# ┗━╸┗━╸╹┗╸ ╹
+
+variable "acme_provider" {
+  type        = string
+  description = "The name of the provider for the DNS challenge"
+}
+
+variable "acme_config" {
+  type        = any
+  description = "The configuration for the provider of the DNS challenge"
+}
