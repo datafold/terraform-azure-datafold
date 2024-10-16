@@ -207,3 +207,17 @@ variable "aks_dns_service_ip" {
   type        = string
   default     = "172.16.0.10"
 }
+
+# ┏━╸┏━╸┏━┓╺┳╸
+# ┃  ┣╸ ┣┳┛ ┃
+# ┗━╸┗━╸╹┗╸ ╹
+
+variable "acme_provider" {
+  type        = string
+  description = "The name of the provider for the DNS challenge"
+}
+
+variable "acme_config" {
+  type        = any
+  description = "The configuration for the provider of the DNS challenge"
+}

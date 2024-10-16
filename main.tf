@@ -37,6 +37,9 @@ module "key_vault" {
   identity = module.identity.identity
 
   domain_name = var.domain_name
+
+  acme_provider = var.acme_provider
+  acme_config   = var.acme_config
 }
 
 module "load_balancer" {

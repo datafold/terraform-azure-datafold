@@ -25,6 +25,6 @@ resource "azurerm_postgresql_flexible_server_database" "example" {
 
   # # prevent the possibility of accidental data loss
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }

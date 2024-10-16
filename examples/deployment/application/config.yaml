@@ -1,7 +1,7 @@
 global:
   datadog:
-    env: test
-    install: false
+    env: prod
+    install: true
   operator:
     allowRollback: true
     releaseChannel: stable

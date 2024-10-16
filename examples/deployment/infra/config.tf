@@ -20,7 +20,7 @@ resource "local_file" "infra_config" {
       cloud_provider                 = module.azure[0].cloud_provider,
       cluster_name                   = module.azure[0].cluster_name,
       gcp_neg_name                   = "",
-      load_balancer_ips              = module.azure[0].load_balancer_ips,
+      load_balancer_ips              = [module.azure[0].load_balancer_ips],
       load_balancer_controller_arn   = "",
       cluster_scaler_role_arn        = "",
       postgres_database              = module.azure[0].postgres_database_name,

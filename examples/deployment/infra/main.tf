@@ -8,7 +8,9 @@
 # ╹ ╹┗━╸┗━┛╹┗╸┗━╸
 
 module "azure" {
-  source = "./../../../../../../../../terraform-azure-datafold"
+  source  = "datafold/datafold/aws"
+  version = "1.0.0"
+
   providers = {
     azurerm = azurerm
     acme    = acme

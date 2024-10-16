@@ -22,14 +22,7 @@ resource "acme_certificate" "cert" {
   certificate_p12_password = random_password.cert.result
 
   dns_challenge {
-    provider = "route53"
-
-    config = {
-      AWS_PROFILE = "acme"
-      # [profile acme]
-      # role_arn = arn:aws:iam::710753145501:role/ACMERoute53CertificateChallanger
-      # source_profile = default
-      # region = us-west-2
-    }
+    provider = var.acme_provider
+    config   = var.acme_config
   }
 }
