@@ -20,8 +20,8 @@ resource "azurerm_kubernetes_cluster" "default" {
     vnet_subnet_id              = var.aks_subnet.id
 
     enable_auto_scaling = true
-    max_count           = 2
-    min_count           = 1
+    max_count           = var.max_node_count
+    min_count           = var.min_node_count
     node_count          = var.node_pool_node_count
 
     upgrade_settings {
@@ -53,6 +53,38 @@ resource "azurerm_kubernetes_cluster" "default" {
       default_node_pool[0].node_count,
     ]
   }
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "custom_node_pools" {
+  for_each = { for pool in var.custom_node_pools : pool.name => pool if pool.enabled }
+
+  # Name must begin with a lowercase letter, contain only lowercase letters and numbers and be between 1 and 12 characters in length
+  name                  = replace(each.value.name, "-", "")
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.default.id
+  vm_size               = each.value.vm_size
+  os_disk_type          = each.value.disk_type
+  os_disk_size_gb       = each.value.disk_size_gb
+
+  enable_auto_scaling = true
+  node_count          = each.value.initial_node_count
+  min_count           = each.value.min_node_count
+  max_count           = each.value.max_node_count
+
+  priority = each.value.spot ? "Spot" : "Regular"
+
+  # Upgrade-specific settings if max_surge is defined. Spot pools can't set max surge
+  dynamic "upgrade_settings" {
+    for_each = each.value.max_surge != null ? [1] : []
+    content {
+      max_surge = each.value.max_surge
+    }
+  }
+
+  node_taints = [
+    for taint in each.value.taints : "${taint.key}=${taint.value}:${taint.effect}"
+  ]
+
+  tags = var.tags
 }
 
 locals {

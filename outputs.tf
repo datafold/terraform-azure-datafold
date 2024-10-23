@@ -20,19 +20,19 @@ output "load_balancer_ips" {
 }
 
 output "postgres_database_name" {
-  value = module.database.postgres_database_name
+  value = coalesce(concat(module.database[*].postgres_database_name, ["notset"])...)
 }
 
 output "postgres_password" {
-  value = module.database.postgres_password
+  value = coalesce(concat(module.database[*].postgres_password, ["notset"])...)
 }
 
 output "postgres_host" {
-  value = module.database.postgres_host
+  value = coalesce(concat(module.database[*].postgres_host, ["notset"])...)
 }
 
 output "postgres_username" {
-  value = module.database.postgres_username
+  value = coalesce(concat(module.database[*].postgres_username, ["notset"])...)
 }
 
 output "azure_blob_account_name" {
