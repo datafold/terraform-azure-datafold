@@ -125,6 +125,12 @@ variable "ssl_cert_name" {
 #  ┃┃┣━┫ ┃ ┣━┫┣┻┓┣━┫┗━┓┣╸
 # ╺┻┛╹ ╹ ╹ ╹ ╹┗━┛╹ ╹┗━┛┗━╸
 
+variable "create_database" {
+  type = bool
+  default = true
+  description = "Flag to toggle PostgreSQL database creation"
+}
+
 variable "database_username" {
   type        = string
   default     = "datafold"
@@ -178,6 +184,16 @@ variable "node_pool_node_count" {
   default     = 1
 }
 
+variable "min_node_count" {
+  type = number
+  default = 1
+}
+
+variable "max_node_count" {
+  type = number
+  default = 2
+}
+
 variable "node_pool_vm_size" {
   description = "The size of the VMs in the pool"
   type        = string
@@ -206,6 +222,28 @@ variable "aks_dns_service_ip" {
   description = "The IP address for the Kubernetes DNS service"
   type        = string
   default     = "172.16.0.10"
+}
+
+variable "custom_node_pools" {
+  type = list(object({
+    name = string
+    enabled = bool
+    initial_node_count = number
+    vm_size = string
+    disk_size_gb = number
+    disk_type = string
+    taints = list(object({
+      key    = string
+      value  = string
+      effect = string
+    }))
+    spot            = bool
+    min_node_count  = number
+    max_node_count  = number
+    max_surge       = number
+  }))
+  description = "Dynamic extra node pools"
+  default = []
 }
 
 # ┏━╸┏━╸┏━┓╺┳╸

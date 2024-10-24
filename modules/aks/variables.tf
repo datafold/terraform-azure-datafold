@@ -69,6 +69,14 @@ variable "node_pool_node_count" {
   type = number
 }
 
+variable "min_node_count" {
+  type = number
+}
+
+variable "max_node_count" {
+  type = number
+}
+
 variable "sku_tier" {
   type    = string
   default = "Free"
@@ -88,4 +96,26 @@ variable "service_cidr" {
 variable "dns_service_ip" {
   type        = string
   description = "The IP address for the DNS service"
+}
+
+variable "custom_node_pools" {
+  type = list(object({
+    name = string
+    enabled = bool
+    initial_node_count = number
+    vm_size = string
+    disk_size_gb = number
+    disk_type = string
+    taints = list(object({
+      key    = string
+      value  = string
+      effect = string
+    }))
+    spot            = bool
+    min_node_count  = number
+    max_node_count  = number
+    max_surge       = number
+  }))
+  description = "Dynamic extra node pools"
+  default = []
 }

@@ -60,6 +60,8 @@ module "load_balancer" {
 }
 
 module "database" {
+  count = var.create_database ? 1 : 0
+
   source = "./modules/database"
 
   deployment_name     = var.deployment_name
@@ -105,9 +107,12 @@ module "aks" {
 
   max_pods             = var.max_pods
   node_pool_node_count = var.node_pool_node_count
+  min_node_count       = var.min_node_count
+  max_node_count       = var.max_node_count
   node_pool_vm_size    = var.node_pool_vm_size
   node_pool_name       = var.node_pool_name
   sku_tier             = var.aks_sku_tier
   service_cidr         = var.aks_service_cidr
   dns_service_ip       = var.aks_dns_service_ip
+  custom_node_pools    = var.custom_node_pools
 }
