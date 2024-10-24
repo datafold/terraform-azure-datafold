@@ -61,6 +61,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "custom_node_pools" {
   # Name must begin with a lowercase letter, contain only lowercase letters and numbers and be between 1 and 12 characters in length
   name                  = replace(each.value.name, "-", "")
   kubernetes_cluster_id = azurerm_kubernetes_cluster.default.id
+  vnet_subnet_id        = var.aks_subnet.id
   vm_size               = each.value.vm_size
   os_disk_type          = each.value.disk_type
   os_disk_size_gb       = each.value.disk_size_gb
@@ -69,6 +70,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "custom_node_pools" {
   node_count          = each.value.initial_node_count
   min_count           = each.value.min_node_count
   max_count           = each.value.max_node_count
+  eviction_policy     = each.value.spot ? "Delete" : null
 
   priority = each.value.spot ? "Spot" : "Regular"
 
