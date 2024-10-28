@@ -1,3 +1,93 @@
+locals {
+  vpc_size = split("/", var.vpc_cidrs[0])[1]
+
+  # Maps do not maintain order, so we need to create a list to track the order of subnets.
+  subnet_order = [
+    "aks",
+    "private_endpoint_storage",
+    "azure_bastion",
+    "vm_bastion",
+    "database",
+    "app",
+    "app_gw"
+  ]
+
+  # Determine which subnets need to be calculated, maintaining order
+  subnets_to_calculate = [
+    for subnet in local.subnet_order : {
+      name = subnet
+      needs_calculation = length(lookup({
+        aks                        = var.aks_subnet_cidrs,
+        private_endpoint_storage   = var.private_endpoint_storage_subnet_cidrs,
+        azure_bastion             = var.azure_bastion_subnet_cidrs,
+        vm_bastion                = var.vm_bastion_subnet_cidrs,
+        database                  = var.database_subnet_cidrs,
+        app                       = var.app_subnet_cidrs,
+        app_gw                    = var.app_gw_subnet_cidrs
+      }, subnet)) == 0
+    }
+  ]
+
+  # Create list of newbits only for subnets that need calculation
+  subnet_newbits = [
+    for subnet in local.subnets_to_calculate :
+    subnet.needs_calculation ?
+    local.vpc_size - ceil(log(lookup({
+      aks                        = var.aks_subnet_size,
+      private_endpoint_storage   = var.private_endpoint_storage_subnet_size,
+      azure_bastion             = var.azure_bastion_subnet_size,
+      vm_bastion                = var.vm_bastion_subnet_size,
+      database                  = var.database_subnet_size,
+      app                       = var.app_subnet_size,
+      app_gw                    = var.app_gw_subnet_size
+    }, subnet.name), 2)) : null
+  ]
+  # Remove null values
+  filtered_newbits = compact(local.subnet_newbits)
+
+  # Calculate only needed CIDRs
+  calculated_cidrs = length(local.filtered_newbits) > 0 ? cidrsubnets(var.vpc_cidrs[0], local.filtered_newbits...) : []
+
+  # Create a map to track which index to use for each subnet, based on position in filtered list
+  calculated_index = {
+    for idx, subnet in local.subnets_to_calculate :
+    subnet.name => subnet.needs_calculation ? index(
+      [for s in local.subnets_to_calculate : s.name if s.needs_calculation],
+      subnet.name
+    ) : null
+  }
+
+  # Final subnet CIDRs
+  aks_subnet_cidrs = coalescelist(
+    var.aks_subnet_cidrs,
+    local.calculated_index.aks != null ? [local.calculated_cidrs[local.calculated_index.aks]] : []
+  )
+  private_endpoint_storage_subnet_cidrs = coalescelist(
+    var.private_endpoint_storage_subnet_cidrs,
+    local.calculated_index.private_endpoint_storage != null ? [local.calculated_cidrs[local.calculated_index.private_endpoint_storage]] : []
+  )
+  azure_bastion_subnet_cidrs = coalescelist(
+    var.azure_bastion_subnet_cidrs,
+    local.calculated_index.azure_bastion != null ? [local.calculated_cidrs[local.calculated_index.azure_bastion]] : []
+  )
+  vm_bastion_subnet_cidrs = coalescelist(
+    var.vm_bastion_subnet_cidrs,
+    local.calculated_index.vm_bastion != null ? [local.calculated_cidrs[local.calculated_index.vm_bastion]] : []
+  )
+  database_subnet_cidrs = coalescelist(
+    var.database_subnet_cidrs,
+    local.calculated_index.database != null ? [local.calculated_cidrs[local.calculated_index.database]] : []
+  )
+  app_subnet_cidrs = coalescelist(
+    var.app_subnet_cidrs,
+    local.calculated_index.app != null ? [local.calculated_cidrs[local.calculated_index.app]] : []
+  )
+  app_gw_subnet_cidrs = coalescelist(
+    var.app_gw_subnet_cidrs,
+    local.calculated_index.app_gw != null ? [local.calculated_cidrs[local.calculated_index.app_gw]] : []
+  )
+}
+
 
 module "networking" {
   source = "./modules/networking"
@@ -9,13 +99,13 @@ module "networking" {
 
   vpc_cidrs                             = var.vpc_cidrs
   virtual_network_tags                  = var.virtual_network_tags
-  aks_subnet_cidrs                      = var.aks_subnet_cidrs
-  private_endpoint_storage_subnet_cidrs = var.private_endpoint_storage_subnet_cidrs
-  azure_bastion_subnet_cidrs            = var.azure_bastion_subnet_cidrs
-  vm_bastion_subnet_cidrs               = var.vm_bastion_subnet_cidrs
-  database_subnet_cidrs                 = var.database_subnet_cidrs
-  app_subnet_cidrs                      = var.app_subnet_cidrs
-  app_gw_subnet_cidrs                   = var.app_gw_subnet_cidrs
+  aks_subnet_cidrs                      = local.aks_subnet_cidrs
+  private_endpoint_storage_subnet_cidrs = local.private_endpoint_storage_subnet_cidrs
+  azure_bastion_subnet_cidrs            = local.azure_bastion_subnet_cidrs
+  vm_bastion_subnet_cidrs               = local.vm_bastion_subnet_cidrs
+  database_subnet_cidrs                 = local.database_subnet_cidrs
+  app_subnet_cidrs                      = local.app_subnet_cidrs
+  app_gw_subnet_cidrs                   = local.app_gw_subnet_cidrs
   jumpbox_custom_data                   = var.jumpbox_custom_data
 }
 
