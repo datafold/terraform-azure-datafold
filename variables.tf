@@ -87,6 +87,24 @@ variable "private_endpoint_storage_subnet_size" {
   }
 }
 
+variable "create_adls" {
+  description = "Whether to create Azure Data Lake Storage"
+  type        = bool
+  default     = false
+}
+
+variable "private_endpoint_adls_subnet_cidrs" {
+  description = "List of subnet CIDRs for ADLS private endpoints"
+  type        = list(string)
+  default     = []
+}
+
+variable "private_endpoint_adls_subnet_size" {
+  description = "Size of the ADLS subnet (number of IP addresses)"
+  type        = number
+  default     = 256
+}
+
 variable "azure_bastion_subnet_cidrs" {
   description = "The CIDR block for the Azure Bastion subnet. If empty it will be calculated from the VPC CIDR and given size."
   type        = list(string)

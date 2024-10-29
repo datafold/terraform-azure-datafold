@@ -19,6 +19,14 @@ resource "azurerm_subnet" "private_endpoint_storage" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = var.private_endpoint_storage_subnet_cidrs
 }
+resource "azurerm_subnet" "private_endpoint_adls" {
+  count = length(var.private_endpoint_adls_subnet_cidrs) > 0 ? 1 : 0
+
+  resource_group_name  = var.resource_group_name
+  name                 = "private-endpoint-adls"
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = var.private_endpoint_adls_subnet_cidrs
+}
 resource "azurerm_subnet" "azure_bastion_subnet" {
   resource_group_name  = var.resource_group_name
   name                 = "AzureBastionSubnet"
