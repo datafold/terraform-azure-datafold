@@ -14,6 +14,10 @@ output "private_endpoint_storage_subnet" {
   value = azurerm_subnet.private_endpoint_storage
 }
 
+output "private_endpoint_adls_subnet" {
+  value = length(azurerm_subnet.private_endpoint_adls) > 0 ? azurerm_subnet.private_endpoint_adls[0] : null
+}
+
 output "database_subnet" {
   value = azurerm_subnet.database_subnet
 }

@@ -2,7 +2,8 @@ locals {
   vpc_size = split("/", var.vpc_cidrs[0])[1]
 
   # Maps do not maintain order, so we need to create a list to track the order of subnets.
-  subnet_order = [
+  # Only include ADLS in subnet order if create_adls is true
+  base_subnet_order = [
     "aks",
     "private_endpoint_storage",
     "azure_bastion",
@@ -11,19 +12,21 @@ locals {
     "app",
     "app_gw"
   ]
+  subnet_order = var.create_adls ? concat(local.base_subnet_order, ["adls"]) : local.base_subnet_order
 
   # Determine which subnets need to be calculated, maintaining order
   subnets_to_calculate = [
     for subnet in local.subnet_order : {
       name = subnet
       needs_calculation = length(lookup({
-        aks                        = var.aks_subnet_cidrs,
-        private_endpoint_storage   = var.private_endpoint_storage_subnet_cidrs,
-        azure_bastion             = var.azure_bastion_subnet_cidrs,
-        vm_bastion                = var.vm_bastion_subnet_cidrs,
-        database                  = var.database_subnet_cidrs,
-        app                       = var.app_subnet_cidrs,
-        app_gw                    = var.app_gw_subnet_cidrs
+        aks = var.aks_subnet_cidrs,
+        private_endpoint_storage = var.private_endpoint_storage_subnet_cidrs,
+        azure_bastion = var.azure_bastion_subnet_cidrs,
+        vm_bastion = var.vm_bastion_subnet_cidrs,
+        database = var.database_subnet_cidrs,
+        app = var.app_subnet_cidrs,
+        app_gw = var.app_gw_subnet_cidrs,
+        adls = var.create_adls ? var.private_endpoint_adls_subnet_cidrs : ["dummy"]  # Only check ADLS if create_adls is true
       }, subnet)) == 0
     }
   ]
@@ -33,15 +36,17 @@ locals {
     for subnet in local.subnets_to_calculate :
     subnet.needs_calculation ?
     local.vpc_size - ceil(log(lookup({
-      aks                        = var.aks_subnet_size,
-      private_endpoint_storage   = var.private_endpoint_storage_subnet_size,
-      azure_bastion             = var.azure_bastion_subnet_size,
-      vm_bastion                = var.vm_bastion_subnet_size,
-      database                  = var.database_subnet_size,
-      app                       = var.app_subnet_size,
-      app_gw                    = var.app_gw_subnet_size
+      aks = var.aks_subnet_size,
+      private_endpoint_storage = var.private_endpoint_storage_subnet_size,
+      azure_bastion = var.azure_bastion_subnet_size,
+      vm_bastion = var.vm_bastion_subnet_size,
+      database = var.database_subnet_size,
+      app = var.app_subnet_size,
+      app_gw = var.app_gw_subnet_size,
+      adls = var.private_endpoint_adls_subnet_size
     }, subnet.name), 2)) : null
   ]
+
   # Remove null values
   filtered_newbits = compact(local.subnet_newbits)
 
@@ -86,6 +91,11 @@ locals {
     var.app_gw_subnet_cidrs,
     local.calculated_index.app_gw != null ? [local.calculated_cidrs[local.calculated_index.app_gw]] : []
   )
+  # Only calculate ADLS subnet CIDR if create_adls is true
+  private_endpoint_adls_subnet_cidrs = var.create_adls ? coalescelist(
+    var.private_endpoint_adls_subnet_cidrs,
+    local.calculated_index.adls != null ? [local.calculated_cidrs[local.calculated_index.adls]] : []
+  ) : []
 }
 
 
@@ -106,6 +116,7 @@ module "networking" {
   database_subnet_cidrs                 = local.database_subnet_cidrs
   app_subnet_cidrs                      = local.app_subnet_cidrs
   app_gw_subnet_cidrs                   = local.app_gw_subnet_cidrs
+  private_endpoint_adls_subnet_cidrs    = local.private_endpoint_adls_subnet_cidrs
   jumpbox_custom_data                   = var.jumpbox_custom_data
 }
 
@@ -179,6 +190,19 @@ module "clickhouse_backup" {
   vpc                             = module.networking.vpc
   private_endpoint_storage_subnet = module.networking.private_endpoint_storage_subnet
   identity                        = module.identity.identity
+}
+
+module "data_lake" {
+  source = "./modules/data_lake"
+  count = var.create_adls ? 1 : 0
+
+  deployment_name     = var.deployment_name
+  resource_group_name = data.azurerm_resource_group.default.name
+  location            = data.azurerm_resource_group.default.location
+
+  vpc                          = module.networking.vpc
+  private_endpoint_adls_subnet = module.networking.private_endpoint_adls_subnet
+  identity                     = module.identity.identity
 }
 
 module "aks" {

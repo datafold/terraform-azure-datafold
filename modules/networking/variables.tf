@@ -38,7 +38,6 @@ variable "tags" {
 variable "vpc_cidrs" {
   description = "The address space for the virtual network"
   type        = list(string)
-  default     = ["10.0.0.0/16"]
 }
 
 variable "virtual_network_tags" {
@@ -50,43 +49,42 @@ variable "virtual_network_tags" {
 variable "aks_subnet_cidrs" {
   description = "The CIDR block for the AKS subnet"
   type        = list(string)
-  default     = ["10.0.0.0/22"]
 }
 
 variable "private_endpoint_storage_subnet_cidrs" {
   description = "The CIDR block for the private endpoint storage subnet"
   type        = list(string)
-  default     = ["10.0.4.0/24"]
+}
+
+variable "private_endpoint_adls_subnet_cidrs" {
+  description = "The CIDR block for the private endpoint storage subnet"
+  type        = list(string)
+  default     = []
 }
 
 variable "azure_bastion_subnet_cidrs" {
   description = "The CIDR block for the Azure Bastion subnet"
   type        = list(string)
-  default     = ["10.0.5.0/24"]
 }
 
 variable "vm_bastion_subnet_cidrs" {
   description = "The CIDR block for the VM Bastion subnet"
   type        = list(string)
-  default     = ["10.0.6.0/24"]
 }
 
 variable "database_subnet_cidrs" {
   description = "The CIDR block for the database subnet"
   type        = list(string)
-  default     = ["10.0.7.0/24"]
 }
 
 variable "app_subnet_cidrs" {
   description = "The CIDR block for the app subnet"
   type        = list(string)
-  default     = ["10.0.8.0/24"]
 }
 
 variable "app_gw_subnet_cidrs" {
   description = "The CIDR block for the app gateway subnet"
   type        = list(string)
-  default     = ["10.0.9.0/24"]
 }
 
 variable "jumpbox_custom_data" {
