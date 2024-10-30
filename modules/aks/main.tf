@@ -85,6 +85,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "custom_node_pools" {
   node_taints = [
     for taint in each.value.taints : "${taint.key}=${taint.value}:${taint.effect}"
   ]
+  node_labels = each.value.labels
 
   tags = var.tags
 }
