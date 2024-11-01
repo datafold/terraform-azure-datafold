@@ -216,6 +216,12 @@ variable "ssl_cert_name" {
   type        = string
 }
 
+variable "lb_is_public" {
+  description = "Flag that determines if LB is public"
+  type        = bool
+  default     = true
+}
+
 # ╺┳┓┏━┓╺┳╸┏━┓┏┓ ┏━┓┏━┓┏━╸
 #  ┃┃┣━┫ ┃ ┣━┫┣┻┓┣━┫┗━┓┣╸
 # ╺┻┛╹ ╹ ╹ ╹ ╹┗━┛╹ ╹┗━┛┗━╸

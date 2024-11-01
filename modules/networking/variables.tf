@@ -92,3 +92,8 @@ variable "jumpbox_custom_data" {
   type        = string
   default     = null
 }
+
+variable "lb_is_public" {
+  description = "Flag that determines if LB is public"
+  type        = bool
+}

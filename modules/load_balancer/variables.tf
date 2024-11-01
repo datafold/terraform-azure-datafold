@@ -44,7 +44,7 @@ variable "ssl_cert_id" {
 }
 
 variable "public_ip" {
-  type = object({ id = string })
+  type    = string
 }
 
 variable "identity" {
@@ -59,4 +59,9 @@ variable "domain_name" {
 variable "ssl_cert_name" {
   description = "The name of the SSL certificate to use for the load balancer. This needs to be referenced by the k8s azure-application-gateway ingress config."
   type        = string
+}
+
+variable "lb_is_public" {
+  description = "Flag that determines if LB is public"
+  type        = bool
 }

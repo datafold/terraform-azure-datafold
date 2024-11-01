@@ -27,6 +27,11 @@ output "cloud_provider" {
   value       = "azure"
 }
 
+output "resource_group_name" {
+  description = "The resource group where resources were deployed"
+  value       = local.resource_group_name
+}
+
 # Network Information
 output "vpc_cidr" {
   description = "The CIDR block of the VPC"
@@ -35,7 +40,12 @@ output "vpc_cidr" {
 
 output "load_balancer_ips" {
   description = "The public IP addresses assigned to the load balancer"
-  value       = module.networking.public_ip.ip_address
+  value       = module.load_balancer.lb_ip
+}
+
+output "vnet_name" {
+  value       = module.networking.vnet_name
+  description = "The name of the virtual network"
 }
 
 # Domain Information
