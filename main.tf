@@ -106,7 +106,6 @@ module "networking" {
   resource_group_name = data.azurerm_resource_group.default.name
   location            = data.azurerm_resource_group.default.location
 
-
   vpc_cidrs                             = var.vpc_cidrs
   virtual_network_tags                  = var.virtual_network_tags
   aks_subnet_cidrs                      = local.aks_subnet_cidrs
@@ -118,6 +117,7 @@ module "networking" {
   app_gw_subnet_cidrs                   = local.app_gw_subnet_cidrs
   private_endpoint_adls_subnet_cidrs    = local.private_endpoint_adls_subnet_cidrs
   jumpbox_custom_data                   = var.jumpbox_custom_data
+  lb_is_public                          = var.lb_is_public
 }
 
 module "identity" {
@@ -152,12 +152,13 @@ module "load_balancer" {
 
   app_gw_subnet = module.networking.app_gw_subnet
   ssl_cert_id   = module.key_vault.ssl_cert_id
-  public_ip     = module.networking.public_ip
+  public_ip     = var.lb_is_public ? module.networking.public_ip : null
   identity      = module.identity.identity
 
   private_ip_address = var.gw_private_ip_address
   domain_name        = var.domain_name
   ssl_cert_name      = var.ssl_cert_name
+  lb_is_public       = var.lb_is_public
 }
 
 module "database" {

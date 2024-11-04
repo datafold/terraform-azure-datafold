@@ -35,5 +35,9 @@ output "database_private_dns_zone_id" {
 }
 
 output "public_ip" {
-  value = azurerm_public_ip.default
+  value = var.lb_is_public ? azurerm_public_ip.default[0].id : null
+}
+
+output "vnet_name" {
+  value = azurerm_virtual_network.vnet.name
 }

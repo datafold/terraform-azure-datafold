@@ -43,7 +43,7 @@ resource "azurerm_application_gateway" "default" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = var.public_ip.id
+    public_ip_address_id = var.public_ip
   }
 
   backend_address_pool {
