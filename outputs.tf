@@ -48,6 +48,11 @@ output "vnet_name" {
   description = "The name of the virtual network"
 }
 
+output "public_ip_jumpbox" {
+  description = "The private IP address of the jumpbox"
+  value       = module.networking.public_ip_jumpbox
+}
+
 # Domain Information
 output "domain_name" {
   description = "The domain name configured for the deployment"

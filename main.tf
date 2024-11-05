@@ -118,6 +118,7 @@ module "networking" {
   private_endpoint_adls_subnet_cidrs    = local.private_endpoint_adls_subnet_cidrs
   jumpbox_custom_data                   = var.jumpbox_custom_data
   lb_is_public                          = var.lb_is_public
+  k8s_public_access_cidrs               = var.k8s_public_access_cidrs
 }
 
 module "identity" {
@@ -220,14 +221,16 @@ module "aks" {
   identity              = module.identity.identity
   etcd_key_vault_key_id = module.key_vault.etcd_key_id
 
-  max_pods             = var.max_pods
-  node_pool_node_count = var.node_pool_node_count
-  min_node_count       = var.min_node_count
-  max_node_count       = var.max_node_count
-  node_pool_vm_size    = var.node_pool_vm_size
-  node_pool_name       = var.node_pool_name
-  sku_tier             = var.aks_sku_tier
-  service_cidr         = var.aks_service_cidr
-  dns_service_ip       = var.aks_dns_service_ip
-  custom_node_pools    = var.custom_node_pools
+  max_pods                = var.max_pods
+  node_pool_node_count    = var.node_pool_node_count
+  min_node_count          = var.min_node_count
+  max_node_count          = var.max_node_count
+  node_pool_vm_size       = var.node_pool_vm_size
+  node_pool_name          = var.node_pool_name
+  sku_tier                = var.aks_sku_tier
+  service_cidr            = var.aks_service_cidr
+  dns_service_ip          = var.aks_dns_service_ip
+  custom_node_pools       = var.custom_node_pools
+  private_cluster_enabled = var.private_cluster_enabled
+  k8s_public_access_cidrs = var.k8s_public_access_cidrs
 }

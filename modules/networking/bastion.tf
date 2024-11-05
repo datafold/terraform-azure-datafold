@@ -42,8 +42,12 @@ resource "azurerm_network_interface" "vm_nic" {
   ip_configuration {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.vm_bastion_subnet.id
+    public_ip_address_id          = azurerm_public_ip.jumpbox[0].id
     private_ip_address_allocation = "Dynamic"
+    primary                       = true
   }
+
+  ip_forwarding_enabled = "true"
 
   tags = var.tags
 }
