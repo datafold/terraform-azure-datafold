@@ -348,6 +348,17 @@ variable "custom_node_pools" {
   default = []
 }
 
+variable "private_cluster_enabled" {
+  type        = bool
+  description = "Flag to enable private cluster"
+  default     = true
+}
+
+variable "k8s_public_access_cidrs" {
+  type        = list(string)
+  description = "List of CIDRs that are allowed to connect to the EKS control plane"
+}
+
 # ┏━╸┏━╸┏━┓╺┳╸
 # ┃  ┣╸ ┣┳┛ ┃
 # ┗━╸┗━╸╹┗╸ ╹

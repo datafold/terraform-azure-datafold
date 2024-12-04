@@ -38,6 +38,10 @@ output "public_ip" {
   value = var.lb_is_public ? azurerm_public_ip.default[0].id : null
 }
 
+output "public_ip_jumpbox" {
+  value = azurerm_public_ip.jumpbox[0].ip_address
+}
+
 output "vnet_name" {
   value = azurerm_virtual_network.vnet.name
 }

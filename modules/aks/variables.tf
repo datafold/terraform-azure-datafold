@@ -120,3 +120,13 @@ variable "custom_node_pools" {
   description = "Dynamic extra node pools"
   default = []
 }
+
+variable "private_cluster_enabled" {
+  type        = bool
+  description = "Flag to enable private cluster"
+}
+
+variable "k8s_public_access_cidrs" {
+  type        = list(string)
+  description = "List of CIDRs that are allowed to connect to the EKS control plane"
+}
