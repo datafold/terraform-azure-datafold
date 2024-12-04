@@ -97,14 +97,3 @@ variable "lb_is_public" {
   description = "Flag that determines if LB is public"
   type        = bool
 }
-
-variable "k8s_public_access_cidrs" {
-  type        = list(string)
-  description = "List of CIDRs that are allowed to connect to the EKS control plane"
-}
-
-variable "private_cluster_enabled" {
-  type        = bool
-  description = "Flag to enable private cluster"
-  default     = true
-}

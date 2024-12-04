@@ -5,14 +5,7 @@ resource "azurerm_kubernetes_cluster" "default" {
   dns_prefix          = "${var.deployment_name}-k8s"
   sku_tier            = var.sku_tier
 
-  dynamic api_server_access_profile {
-    for_each = var.private_cluster_enabled ? [] : [1]
-    content {
-      authorized_ip_ranges = var.k8s_public_access_cidrs
-    }
-  }
-
-  private_cluster_enabled             = var.private_cluster_enabled
+  private_cluster_enabled             = true
   private_cluster_public_fqdn_enabled = true
 
   ingress_application_gateway {
@@ -95,10 +88,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "custom_node_pools" {
   node_labels = each.value.labels
 
   tags = var.tags
-
-  lifecycle {
-    ignore_changes = [ node_count ]
-  }
 }
 
 locals {
