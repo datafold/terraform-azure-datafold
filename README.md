@@ -117,6 +117,7 @@ All we need to do is create two databases:
 
 1. `./manage.py clickhouse create-tables`
 2. `./manage.py database create-or-upgrade`
+3. `./manage.py installation set-new-deployment-params`
 
 Now all containers should be up and running.
 
