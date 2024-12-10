@@ -12,3 +12,5 @@ postgres:
 nginx:
   ingress:
     deploy: true
+initjob:
+  install: true
