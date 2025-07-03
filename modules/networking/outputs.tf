@@ -27,15 +27,19 @@ output "app_gw_subnet" {
 }
 
 output "vpc_cidr" {
-  value = azurerm_virtual_network.vnet.address_space[0]
+  value = one(azurerm_virtual_network.vnet.address_space)
 }
 
 output "database_private_dns_zone_id" {
   value = azurerm_private_dns_zone.database.id
 }
 
-output "public_ip" {
+output "public_ip_id" {
   value = var.lb_is_public ? azurerm_public_ip.default[0].id : null
+}
+
+output "public_ip" {
+  value = var.lb_is_public ? azurerm_public_ip.default[0].ip_address : null
 }
 
 output "public_ip_jumpbox" {

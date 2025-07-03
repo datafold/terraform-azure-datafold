@@ -7,8 +7,6 @@ locals {
   app_gateway_name               = "${var.deployment_name}-ag-private-link"
 }
 
-
-
 resource "azurerm_application_gateway" "default" {
   name                = local.app_gateway_name
   resource_group_name = var.resource_group_name
@@ -43,7 +41,7 @@ resource "azurerm_application_gateway" "default" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = var.public_ip
+    public_ip_address_id = var.public_ip_id
   }
 
   backend_address_pool {
@@ -59,12 +57,35 @@ resource "azurerm_application_gateway" "default" {
   }
 
   http_listener {
+    name                           = "http"
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = "port_80"
+    protocol                       = "Http"
+  }
+
+  http_listener {
     name                           = "https"
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = "port_443"
     protocol                       = "Https"
     require_sni                    = "false"
-    ssl_certificate_name           = "ssl"
+    ssl_certificate_name           = var.ssl_cert_name
+  }
+
+  request_routing_rule {
+    name                        = "http-redirect"
+    rule_type                   = "Basic"
+    http_listener_name          = "http"
+    redirect_configuration_name = "http-to-https"
+    priority                    = 90
+  }
+
+  redirect_configuration {
+    name                 = "http-to-https"
+    redirect_type        = "Permanent"
+    target_listener_name = "https"
+    include_path         = true
+    include_query_string = true
   }
 
   request_routing_rule {
@@ -87,10 +108,14 @@ resource "azurerm_application_gateway" "default" {
     }
   }
 
-
   ssl_certificate {
     key_vault_secret_id = var.ssl_cert_id
     name                = var.ssl_cert_name
+  }
+
+  ssl_policy {
+    policy_type = "Predefined"
+    policy_name = "AppGwSslPolicy20220101S"  # Latest secure policy
   }
 
   lifecycle {

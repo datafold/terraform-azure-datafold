@@ -37,6 +37,67 @@ variable "location" {
   default     = ""
 }
 
+variable "disk_sku" {
+  description = "Disk SKU type"
+  type        = string
+  default     = "StandardSSD_LRS"
+  # Options: Standard_LRS, StandardSSD_LRS, Premium_LRS, UltraSSD_LRS
+}
+
+variable "clickhouse_data_size" {
+  description = "ClickHouse data disk size in GB"
+  type        = number
+  default     = 40
+}
+
+variable "clickhouse_logs_size" {
+  description = "ClickHouse logs disk size in GB"
+  type        = number
+  default     = 40
+}
+
+variable "redis_data_size" {
+  description = "Redis data disk size in GB"
+  type        = number
+  default     = 50
+}
+
+variable "ch_data_disk_iops" {
+  type        = number
+  default     = 3000
+  description = "IOPS of volume"
+}
+
+variable "ch_data_disk_throughput" {
+  type        = number
+  default     = 1000
+  description = "Throughput of volume"
+}
+
+variable "ch_logs_disk_iops" {
+  type        = number
+  default     = 3000
+  description = "IOPS of volume"
+}
+
+variable "ch_logs_disk_throughput" {
+  type        = number
+  default     = 250
+  description = "Throughput of volume"
+}
+
+variable "redis_disk_iops" {
+  type        = number
+  default     = 3000
+  description = "IOPS of redis volume"
+}
+
+variable "redis_disk_throughput" {
+  type        = number
+  default     = 125
+  description = "Throughput of redis volume"
+}
+
 # ┏┓╻┏━╸╺┳╸╻ ╻┏━┓┏━┓╻┏
 # ┃┗┫┣╸  ┃ ┃╻┃┃ ┃┣┳┛┣┻┓
 # ╹ ╹┗━╸ ╹ ┗┻┛┗━┛╹┗╸╹ ╹
@@ -273,6 +334,20 @@ variable "postgresql_major_version" {
 # ┣┻┓┃ ┃┣┻┓┣╸ ┣┳┛┃┗┫┣╸  ┃ ┣╸ ┗━┓
 # ╹ ╹┗━┛┗━┛┗━╸╹┗╸╹ ╹┗━╸ ╹ ┗━╸┗━┛
 
+variable "service_accounts" {
+  description = "Map of service accounts and their configuration"
+  type        = map(object({
+    namespace             = string
+    create_azure_identity = bool
+    identity_name         = optional(string)
+    role_assignments      = optional(list(object({
+      role  = string
+      scope = string
+    })), [])
+  }))
+  default     = {}
+}
+
 variable "max_pods" {
   description = "The maximum number of pods that can run on a node"
   type        = number
@@ -292,7 +367,7 @@ variable "min_node_count" {
 
 variable "max_node_count" {
   type = number
-  default = 2
+  default = 6
 }
 
 variable "node_pool_vm_size" {
@@ -323,6 +398,12 @@ variable "aks_dns_service_ip" {
   description = "The IP address for the Kubernetes DNS service"
   type        = string
   default     = "172.16.0.10"
+}
+
+variable "aks_workload_identity_enabled" {
+  type        = bool
+  default     = true
+  description = "Flag to enable workload identity"
 }
 
 variable "custom_node_pools" {

@@ -1,5 +1,5 @@
 output "postgres_database_name" {
-  value = azurerm_postgresql_flexible_server_database.example.name
+  value = azurerm_postgresql_flexible_server_database.main.name
 }
 
 output "postgres_password" {
@@ -7,9 +7,9 @@ output "postgres_password" {
 }
 
 output "postgres_host" {
-  value = azurerm_postgresql_flexible_server.example.fqdn
+  value = azurerm_postgresql_flexible_server.main.fqdn
 }
 
 output "postgres_username" {
-  value = azurerm_postgresql_flexible_server.example.administrator_login
+  value = azurerm_postgresql_flexible_server.main.administrator_login
 }

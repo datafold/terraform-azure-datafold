@@ -8,5 +8,5 @@ output "gateway_id" {
 
 output "lb_ip" {
   description = "IP of the load balancer"
-  value       = var.lb_is_public ? azurerm_application_gateway.default.frontend_ip_configuration[0].public_ip_address_id : azurerm_application_gateway.default.frontend_ip_configuration[0].private_ip_address
+  value       = var.lb_is_public ? var.public_ip : azurerm_application_gateway.default.frontend_ip_configuration[0].private_ip_address
 }
