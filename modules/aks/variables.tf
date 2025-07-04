@@ -79,7 +79,7 @@ variable "max_node_count" {
 
 variable "sku_tier" {
   type    = string
-  default = "Free"
+  default = "Standard"
 }
 
 variable "max_pods" {
@@ -129,4 +129,22 @@ variable "private_cluster_enabled" {
 variable "k8s_public_access_cidrs" {
   type        = list(string)
   description = "List of CIDRs that are allowed to connect to the EKS control plane"
+}
+
+variable "service_accounts" {
+  description = "Map of service accounts and their configuration"
+  type        = map(object({
+    namespace             = string
+    create_azure_identity = bool
+    identity_name         = optional(string)
+    role_assignments      = optional(list(object({
+      role  = string
+      scope = string
+    })), [])
+  }))
+}
+
+variable "workload_identity_on" {
+  type        = bool
+  description = "Flag to enable workload identity"
 }

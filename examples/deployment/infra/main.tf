@@ -7,8 +7,12 @@
 # ┣━┫┏━┛┃ ┃┣┳┛┣╸
 # ╹ ╹┗━╸┗━┛╹┗╸┗━╸
 
+locals {
+  storage_account_name = replace("${local.deployment_name}-storage", "-", "")
+}
+
 module "azure" {
-  source  = "datafold/datafold/aws"
+  source  = "datafold/datafold/azure"
   version = "1.0.0"
 
   providers = {
@@ -34,4 +38,30 @@ module "azure" {
 
   # Nodes
   node_pool_vm_size = "Standard_E8s_v3"
+
+  service_accounts = {
+    "${local.clickhouse_backup_sa}" = {
+      namespace             = local.deployment_name
+      create_azure_identity = true
+      identity_name         = local.clickhouse_backup_sa
+      role_assignments = [
+        {
+          role  = "Storage Blob Data Contributor"
+          scope = "/subscriptions/${local.azure_subscription_id}/resourceGroups/${local.resource_group_name}/providers/Microsoft.Storage/storageAccounts/${local.storage_account_name}"
+        }
+      ]
+    },
+  }
+
+  # Certificate note
+  # Example:
+  # [profile acme]
+  # role_arn = arn:aws:iam::1234567890:role/ACMERoute53CertificateChallenger
+  # source_profile = default
+  # region = us-west-2
+
+  acme_provider = "route53"
+  acme_config = {
+    AWS_PROFILE = "acme"
+  }
 }

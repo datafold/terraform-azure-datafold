@@ -110,20 +110,6 @@ k9s
 
 ### Initializing the application
 
-The deployment is created and the initjob should have created the databases and done the 
-initialization of the site settings.
-
-If that didn't complete successfully, try to restart the job. 
-
-Once the deployment is complete and the initjob succeeded, we can set the install to that for false in config.yaml:
-
-```
-initjob:
-  install: false
-```
-
-Alternatively, here are the manual steps to achieve the same:
-
 Establish a shell into the `<deployment>-dfshell` container. 
 It is likely that the scheduler and server containers are crashing in a loop.
 

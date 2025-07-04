@@ -1,0 +1,1 @@
+ssh_authorized_keys: [ssh-rsa AAAA.... youruser@email.com, ssh-rsa AAAA... otheruser@email.com]

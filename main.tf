@@ -153,7 +153,8 @@ module "load_balancer" {
 
   app_gw_subnet = module.networking.app_gw_subnet
   ssl_cert_id   = module.key_vault.ssl_cert_id
-  public_ip     = var.lb_is_public ? module.networking.public_ip : null
+  public_ip_id  = var.lb_is_public ? module.networking.public_ip_id : null
+  public_ip     = module.networking.public_ip
   identity      = module.identity.identity
 
   private_ip_address = var.gw_private_ip_address
@@ -233,4 +234,81 @@ module "aks" {
   custom_node_pools       = var.custom_node_pools
   private_cluster_enabled = var.private_cluster_enabled
   k8s_public_access_cidrs = var.k8s_public_access_cidrs
+  workload_identity_on    = var.aks_workload_identity_enabled
+  service_accounts        = var.service_accounts
+}
+
+resource "azurerm_managed_disk" "clickhouse_data" {
+  name                 = "${var.deployment_name}-clickhouse-data"
+  location             = var.location
+  resource_group_name  = module.aks.node_resource_group_id
+  storage_account_type = var.disk_sku
+  create_option        = "Empty"
+  disk_size_gb         = var.clickhouse_data_size
+
+  # Configure performance tier for Premium/Ultra disks
+  disk_iops_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_iops : null
+  disk_mbps_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_throughput : null
+
+  # Ultra SSD specific settings
+  disk_iops_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_iops : null
+  disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_throughput : null
+
+  tags = {
+    Name = "${var.deployment_name}-clickhouse-data"
+  }
+
+  depends_on = [
+    module.aks
+  ]
+}
+
+resource "azurerm_managed_disk" "clickhouse_logs" {
+  name                 = "${var.deployment_name}-clickhouse-logs"
+  location             = var.location
+  resource_group_name  = module.aks.node_resource_group_id
+  storage_account_type = var.disk_sku
+  create_option        = "Empty"
+  disk_size_gb         = var.clickhouse_logs_size
+
+  # Configure performance tier for Premium/Ultra disks
+  disk_iops_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_iops : null
+  disk_mbps_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_throughput : null
+
+  # Ultra SSD specific settings
+  disk_iops_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_iops : null
+  disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_throughput : null
+
+  tags = {
+    Name = "${var.deployment_name}-clickhouse-logs"
+  }
+
+  depends_on = [
+    module.aks
+  ]
+}
+
+resource "azurerm_managed_disk" "redis_data" {
+  name                 = "${var.deployment_name}-redis-data"
+  location             = var.location
+  resource_group_name  = module.aks.node_resource_group_id
+  storage_account_type = var.disk_sku
+  create_option        = "Empty"
+  disk_size_gb         = var.redis_data_size
+
+  # Configure performance tier for Premium/Ultra disks
+  disk_iops_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_iops : null
+  disk_mbps_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_throughput : null
+
+  # Ultra SSD specific settings
+  disk_iops_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_iops : null
+  disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_throughput : null
+
+  tags = {
+    Name = "${var.deployment_name}-redis-data"
+  }
+
+  depends_on = [
+    module.aks
+  ]
 }

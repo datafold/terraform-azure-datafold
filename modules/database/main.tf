@@ -1,5 +1,5 @@
 # TODO: Do not hardcode, but create variables for e.g. version, sku_name, etc.
-resource "azurerm_postgresql_flexible_server" "example" {
+resource "azurerm_postgresql_flexible_server" "main" {
   name                          = "${var.deployment_name}-db-server"
   resource_group_name           = var.resource_group_name
   location                      = var.location
@@ -17,9 +17,9 @@ resource "azurerm_postgresql_flexible_server" "example" {
   tags = var.tags
 }
 
-resource "azurerm_postgresql_flexible_server_database" "example" {
+resource "azurerm_postgresql_flexible_server_database" "main" {
   name      = var.database_name
-  server_id = azurerm_postgresql_flexible_server.example.id
+  server_id = azurerm_postgresql_flexible_server.main.id
   collation = "en_US.utf8"
   charset   = "utf8"
 

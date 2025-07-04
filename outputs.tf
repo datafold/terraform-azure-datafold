@@ -65,6 +65,11 @@ output "cluster_name" {
   value       = module.aks.cluster_name
 }
 
+output "service_account_configs" {
+  description = "The Azure identity configs"
+  value       = module.aks.service_account_configs
+}
+
 # Database Information
 output "postgres_database_name" {
   description = "The name of the PostgreSQL database"
@@ -119,4 +124,19 @@ output "adls_account_key" {
 output "adls_filesystem" {
   description = "The filesystem details for the Azure Data Lake Storage"
   value       = try(local.adls.filesystem, local.default_unset_value)
+}
+
+output "clickhouse_data_volume_id" {
+  value = resource.azurerm_managed_disk.clickhouse_data.id
+  description = "The volume ID where clickhouse data will be stored."
+}
+
+output "clickhouse_logs_volume_id" {
+  value = resource.azurerm_managed_disk.clickhouse_logs.id
+  description = "The volume ID where clickhouse logs will be stored."
+}
+
+output "redis_data_volume_id" {
+  value = resource.azurerm_managed_disk.redis_data.id
+  description = "The volume ID of the Redis data volume."
 }

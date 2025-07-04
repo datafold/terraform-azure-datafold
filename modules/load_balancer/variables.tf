@@ -43,6 +43,10 @@ variable "ssl_cert_id" {
   description = "The ID of the SSL certificate to use for the load balancer"
 }
 
+variable "public_ip_id" {
+  type    = string
+}
+
 variable "public_ip" {
   type    = string
 }
