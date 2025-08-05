@@ -1,6 +1,12 @@
+locals {
+  bastion_public_ip_name = var.bastion_public_ip_name_override != "" ? var.bastion_public_ip_name_override : "${var.deployment_name}-ip-bastion-host"
+  bastion_host_name      = var.bastion_host_name_override != "" ? var.bastion_host_name_override : "bastion"
+  vm_nic_name           = var.vm_nic_name_override != "" ? var.vm_nic_name_override : "vm-nic"
+  linux_vm_name         = var.linux_vm_name_override != "" ? var.linux_vm_name_override : "${var.deployment_name}-jumpbox-vm"
+}
 
 resource "azurerm_public_ip" "ip_bastion_host" {
-  name                = "${var.deployment_name}-ip-bastion-host"
+  name                = local.bastion_public_ip_name
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
@@ -10,7 +16,7 @@ resource "azurerm_public_ip" "ip_bastion_host" {
 }
 
 resource "azurerm_bastion_host" "bastion" {
-  name                = "bastion"
+  name                = local.bastion_host_name
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -35,7 +41,7 @@ resource "azurerm_bastion_host" "bastion" {
 # ┗━┛┗━┛╹ ╹╹  ┗━┛┗━┛╹ ╹
 
 resource "azurerm_network_interface" "vm_nic" {
-  name                = "vm-nic"
+  name                = local.vm_nic_name
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -53,7 +59,7 @@ resource "azurerm_network_interface" "vm_nic" {
 }
 
 resource "azurerm_linux_virtual_machine" "linux_vm" {
-  name                = "${var.deployment_name}-jumpbox-vm"
+  name                = local.linux_vm_name
   resource_group_name = var.resource_group_name
   location            = var.location
   size                = "Standard_F2"

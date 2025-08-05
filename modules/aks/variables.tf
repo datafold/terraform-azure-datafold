@@ -148,3 +148,19 @@ variable "workload_identity_on" {
   type        = bool
   description = "Flag to enable workload identity"
 }
+
+# ┏━┓┏━╸┏━┓┏━┓╻ ╻┏━┓┏━╸┏━╸   ┏┓╻┏━┓┏┳┓┏━╸   ┏━┓╻ ╻┏━╸┏━┓┏━┓╻╺┳┓┏━╸┏━┓
+# ┣┳┛┣╸ ┗━┓┃ ┃┃ ┃┣┳┛┃  ┣╸    ┃┗┫┣━┫┃┃┃┣╸    ┃ ┃┃┏┛┣╸ ┣┳┛┣┳┛┃ ┃┃┣╸ ┗━┓
+# ╹┗╸┗━╸┗━┛┗━┛┗━┛╹┗╸┗━╸┗━╸   ╹ ╹╹ ╹╹ ╹┗━╸   ┗━┛┗┛ ┗━╸╹┗╸╹┗╸╹╺┻┛┗━╸┗━┛
+
+variable "aks_cluster_name_override" {
+  description = "Override for the name used in resource.azurerm_kubernetes_cluster.default"
+  type        = string
+  default     = ""
+}
+
+variable "aks_dns_prefix_override" {
+  description = "Override for the dns_prefix used in resource.azurerm_kubernetes_cluster.default"
+  type        = string
+  default     = ""
+}

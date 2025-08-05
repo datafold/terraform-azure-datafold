@@ -1,12 +1,13 @@
 locals {
-  cluster_name = "${var.deployment_name}-cluster"
+  cluster_name = var.aks_cluster_name_override != "" ? var.aks_cluster_name_override : "${var.deployment_name}-cluster"
+  dns_prefix   = var.aks_dns_prefix_override != "" ? var.aks_dns_prefix_override : "${var.deployment_name}-k8s"
 }
 
 resource "azurerm_kubernetes_cluster" "default" {
   name                = local.cluster_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  dns_prefix          = "${var.deployment_name}-k8s"
+  dns_prefix          = local.dns_prefix
   sku_tier            = var.sku_tier
 
   dynamic api_server_access_profile {

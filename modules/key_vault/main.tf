@@ -2,8 +2,10 @@
 data "azurerm_client_config" "current" {}
 
 locals {
-  vault_name           = "${var.deployment_name}-vault"
+  vault_name           = var.key_vault_name_override != "" ? var.key_vault_name_override : "${var.deployment_name}-vault"
   vault_truncated_name = substr(local.vault_name, 0, min(length(local.vault_name), 24))
+  etcd_key_name        = var.etcd_key_name_override != "" ? var.etcd_key_name_override : "generated-etcd-key"
+  ssl_certificate_name = var.ssl_certificate_name_override != "" ? var.ssl_certificate_name_override : "${var.deployment_name}-certificate"
 }
 
 resource "azurerm_key_vault" "default" {
@@ -54,7 +56,7 @@ resource "azurerm_key_vault_access_policy" "identity" {
 resource "azurerm_key_vault_key" "etcd" {
   depends_on = [azurerm_key_vault_access_policy.parent, azurerm_key_vault_access_policy.identity]
 
-  name         = "generated-etcd-key"
+  name         = local.etcd_key_name
   key_vault_id = azurerm_key_vault.default.id
   key_type     = "RSA"
   key_size     = 2048
@@ -64,7 +66,7 @@ resource "azurerm_key_vault_key" "etcd" {
 
 
 resource "azurerm_key_vault_certificate" "ssl" {
-  name         = "${var.deployment_name}-certificate"
+  name         = local.ssl_certificate_name
   key_vault_id = azurerm_key_vault.default.id
 
   certificate {

@@ -119,6 +119,27 @@ module "networking" {
   jumpbox_custom_data                   = var.jumpbox_custom_data
   lb_is_public                          = var.lb_is_public
   k8s_public_access_cidrs               = var.k8s_public_access_cidrs
+
+  # Resource name overrides
+  virtual_network_name_override                     = var.virtual_network_name_override
+  aks_subnet_name_override                          = var.aks_subnet_name_override
+  private_endpoint_storage_subnet_name_override     = var.private_endpoint_storage_subnet_name_override
+  private_endpoint_adls_subnet_name_override        = var.private_endpoint_adls_subnet_name_override
+  azure_bastion_subnet_name_override                = var.azure_bastion_subnet_name_override
+  vm_bastion_subnet_name_override                   = var.vm_bastion_subnet_name_override
+  database_subnet_name_override                     = var.database_subnet_name_override
+  app_subnet_name_override                          = var.app_subnet_name_override
+  app_gw_subnet_name_override                       = var.app_gw_subnet_name_override
+  public_ip_name_override                           = var.public_ip_name_override
+  jumpbox_public_ip_name_override                   = var.jumpbox_public_ip_name_override
+  bastion_public_ip_name_override                   = var.bastion_public_ip_name_override
+  vnet_nsg_name_override                            = var.vnet_nsg_name_override
+  jumpbox_nsg_name_override                         = var.jumpbox_nsg_name_override
+  bastion_host_name_override                        = var.bastion_host_name_override
+  vm_nic_name_override                              = var.vm_nic_name_override
+  linux_vm_name_override                            = var.linux_vm_name_override
+  database_private_dns_zone_name_override          = var.database_private_dns_zone_name_override
+  database_dns_link_name_override                  = var.database_dns_link_name_override
 }
 
 module "identity" {
@@ -127,6 +148,9 @@ module "identity" {
   deployment_name     = var.deployment_name
   resource_group_name = data.azurerm_resource_group.default.name
   location            = data.azurerm_resource_group.default.location
+
+  # Resource name overrides
+  identity_name_override = var.identity_name_override
 }
 
 module "key_vault" {
@@ -142,6 +166,11 @@ module "key_vault" {
 
   acme_provider = var.acme_provider
   acme_config   = var.acme_config
+
+  # Resource name overrides
+  key_vault_name_override       = var.key_vault_name_override
+  etcd_key_name_override        = var.etcd_key_name_override
+  ssl_certificate_name_override = var.ssl_certificate_name_override
 }
 
 module "load_balancer" {
@@ -161,6 +190,9 @@ module "load_balancer" {
   domain_name        = var.domain_name
   ssl_cert_name      = var.ssl_cert_name
   lb_is_public       = var.lb_is_public
+
+  # Resource name overrides
+  application_gateway_name_override = var.application_gateway_name_override
 }
 
 module "database" {
@@ -181,6 +213,10 @@ module "database" {
   database_backup_retention_days = var.database_backup_retention_days
   database_storage_mb            = var.database_storage_mb
   postgresql_major_version       = var.postgresql_major_version
+
+  # Resource name overrides
+  postgresql_server_name_override   = var.postgresql_server_name_override
+  postgresql_database_name_override = var.postgresql_database_name_override
 }
 
 module "clickhouse_backup" {
@@ -193,6 +229,13 @@ module "clickhouse_backup" {
   vpc                             = module.networking.vpc
   private_endpoint_storage_subnet = module.networking.private_endpoint_storage_subnet
   identity                        = module.identity.identity
+
+  # Resource name overrides
+  storage_account_name_override           = var.storage_account_name_override
+  clickhouse_backup_container_name_override = var.clickhouse_backup_container_name_override
+  storage_private_dns_zone_name_override = var.storage_private_dns_zone_name_override
+  storage_private_endpoint_name_override  = var.storage_private_endpoint_name_override
+  storage_dns_link_name_override          = var.storage_dns_link_name_override
 }
 
 module "data_lake" {
@@ -206,6 +249,13 @@ module "data_lake" {
   vpc                          = module.networking.vpc
   private_endpoint_adls_subnet = module.networking.private_endpoint_adls_subnet
   identity                     = module.identity.identity
+
+  # Resource name overrides
+  adls_storage_account_name_override     = var.adls_storage_account_name_override
+  adls_filesystem_name_override          = var.adls_filesystem_name_override
+  adls_private_dns_zone_name_override    = var.adls_private_dns_zone_name_override
+  adls_dns_link_name_override            = var.adls_dns_link_name_override
+  adls_private_endpoint_name_override    = var.adls_private_endpoint_name_override
 }
 
 module "aks" {
@@ -236,10 +286,20 @@ module "aks" {
   k8s_public_access_cidrs = var.k8s_public_access_cidrs
   workload_identity_on    = var.aks_workload_identity_enabled
   service_accounts        = var.service_accounts
+
+  # Resource name overrides
+  aks_cluster_name_override = var.aks_cluster_name_override
+  aks_dns_prefix_override   = var.aks_dns_prefix_override
+}
+
+locals {
+  clickhouse_data_disk_name = var.clickhouse_data_disk_name_override != "" ? var.clickhouse_data_disk_name_override : "${var.deployment_name}-clickhouse-data"
+  clickhouse_logs_disk_name = var.clickhouse_logs_disk_name_override != "" ? var.clickhouse_logs_disk_name_override : "${var.deployment_name}-clickhouse-logs"
+  redis_data_disk_name      = var.redis_data_disk_name_override != "" ? var.redis_data_disk_name_override : "${var.deployment_name}-redis-data"
 }
 
 resource "azurerm_managed_disk" "clickhouse_data" {
-  name                 = "${var.deployment_name}-clickhouse-data"
+  name                 = local.clickhouse_data_disk_name
   location             = var.location
   resource_group_name  = module.aks.node_resource_group_id
   storage_account_type = var.disk_sku
@@ -255,7 +315,7 @@ resource "azurerm_managed_disk" "clickhouse_data" {
   disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_throughput : null
 
   tags = {
-    Name = "${var.deployment_name}-clickhouse-data"
+    Name = local.clickhouse_data_disk_name
   }
 
   depends_on = [
@@ -264,7 +324,7 @@ resource "azurerm_managed_disk" "clickhouse_data" {
 }
 
 resource "azurerm_managed_disk" "clickhouse_logs" {
-  name                 = "${var.deployment_name}-clickhouse-logs"
+  name                 = local.clickhouse_logs_disk_name
   location             = var.location
   resource_group_name  = module.aks.node_resource_group_id
   storage_account_type = var.disk_sku
@@ -280,7 +340,7 @@ resource "azurerm_managed_disk" "clickhouse_logs" {
   disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_throughput : null
 
   tags = {
-    Name = "${var.deployment_name}-clickhouse-logs"
+    Name = local.clickhouse_logs_disk_name
   }
 
   depends_on = [
@@ -289,7 +349,7 @@ resource "azurerm_managed_disk" "clickhouse_logs" {
 }
 
 resource "azurerm_managed_disk" "redis_data" {
-  name                 = "${var.deployment_name}-redis-data"
+  name                 = local.redis_data_disk_name
   location             = var.location
   resource_group_name  = module.aks.node_resource_group_id
   storage_account_type = var.disk_sku
@@ -305,7 +365,7 @@ resource "azurerm_managed_disk" "redis_data" {
   disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_throughput : null
 
   tags = {
-    Name = "${var.deployment_name}-redis-data"
+    Name = local.redis_data_disk_name
   }
 
   depends_on = [

@@ -4,7 +4,7 @@ locals {
   gateway_ip_configuration_name  = "${var.deployment_name}-gwip"
   http_setting_name              = "${var.deployment_name}-be-htst-http"
   request_routing_rule_name_http = "${var.deployment_name}-rqrt-http"
-  app_gateway_name               = "${var.deployment_name}-ag-private-link"
+  app_gateway_name               = var.application_gateway_name_override != "" ? var.application_gateway_name_override : "${var.deployment_name}-ag-private-link"
 }
 
 resource "azurerm_application_gateway" "default" {
@@ -37,6 +37,11 @@ resource "azurerm_application_gateway" "default" {
   frontend_port {
     name = "port_443"
     port = 443
+  }
+
+  frontend_port {
+    name = "port_80"
+    port = 80
   }
 
   frontend_ip_configuration {

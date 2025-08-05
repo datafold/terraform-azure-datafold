@@ -453,3 +453,263 @@ variable "acme_config" {
   type        = any
   description = "The configuration for the provider of the DNS challenge"
 }
+
+# ┏━┓┏━╸┏━┓┏━┓╻ ╻┏━┓┏━╸┏━╸   ┏┓╻┏━┓┏┳┓┏━╸   ┏━┓╻ ╻┏━╸┏━┓┏━┓╻╺┳┓┏━╸┏━┓
+# ┣┳┛┣╸ ┗━┓┃ ┃┃ ┃┣┳┛┃  ┣╸    ┃┗┫┣━┫┃┃┃┣╸    ┃ ┃┃┏┛┣╸ ┣┳┛┣┳┛┃ ┃┃┣╸ ┗━┓
+# ╹┗╸┗━╸┗━┛┗━┛┗━┛╹┗╸┗━╸┗━╸   ╹ ╹╹ ╹╹ ╹┗━╸   ┗━┛┗┛ ┗━╸╹┗╸╹┗╸╹╺┻┛┗━╸┗━┛
+
+# Root Level Resource Overrides
+
+variable "clickhouse_data_disk_name_override" {
+  description = "Override for the name used in resource.azurerm_managed_disk.clickhouse_data"
+  type        = string
+  default     = ""
+}
+
+variable "clickhouse_logs_disk_name_override" {
+  description = "Override for the name used in resource.azurerm_managed_disk.clickhouse_logs"
+  type        = string
+  default     = ""
+}
+
+variable "redis_data_disk_name_override" {
+  description = "Override for the name used in resource.azurerm_managed_disk.redis_data"
+  type        = string
+  default     = ""
+}
+
+# Identity Module Overrides
+variable "identity_name_override" {
+  description = "Override for the name used in resource.azurerm_user_assigned_identity.default (modules/identity)"
+  type        = string
+  default     = ""
+}
+
+# AKS Module Overrides
+variable "aks_cluster_name_override" {
+  description = "Override for the name used in resource.azurerm_kubernetes_cluster.default (modules/aks)"
+  type        = string
+  default     = ""
+}
+
+variable "aks_dns_prefix_override" {
+  description = "Override for the dns_prefix used in resource.azurerm_kubernetes_cluster.default (modules/aks)"
+  type        = string
+  default     = ""
+}
+
+# Database Module Overrides
+variable "postgresql_server_name_override" {
+  description = "Override for the name used in resource.azurerm_postgresql_flexible_server.main (modules/database)"
+  type        = string
+  default     = ""
+}
+
+variable "postgresql_database_name_override" {
+  description = "Override for the name used in resource.azurerm_postgresql_flexible_server_database.main (modules/database)"
+  type        = string
+  default     = ""
+}
+
+# Data Lake Module Overrides  
+variable "adls_storage_account_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_account.adls (modules/data_lake)"
+  type        = string
+  default     = ""
+}
+
+variable "adls_filesystem_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_data_lake_gen2_filesystem.adls (modules/data_lake)"
+  type        = string
+  default     = ""
+}
+
+variable "adls_private_dns_zone_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone.adls (modules/data_lake)"
+  type        = string
+  default     = ""
+}
+
+variable "adls_dns_link_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone_virtual_network_link.adls (modules/data_lake)"
+  type        = string
+  default     = ""
+}
+
+variable "adls_private_endpoint_name_override" {
+  description = "Override for the name used in resource.azurerm_private_endpoint.adls (modules/data_lake)"
+  type        = string
+  default     = ""
+}
+
+# ClickHouse Backup Module Overrides
+variable "storage_account_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_account.storage (modules/clickhouse_backup)"
+  type        = string
+  default     = ""
+}
+
+variable "clickhouse_backup_container_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_container.clickhouse_backup (modules/clickhouse_backup)"
+  type        = string
+  default     = ""
+}
+
+variable "storage_private_dns_zone_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone.storage_account_dns (modules/clickhouse_backup)"
+  type        = string
+  default     = ""
+}
+
+variable "storage_private_endpoint_name_override" {
+  description = "Override for the name used in resource.azurerm_private_endpoint.storage (modules/clickhouse_backup)"
+  type        = string
+  default     = ""
+}
+
+variable "storage_dns_link_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone_virtual_network_link.storage_account_link (modules/clickhouse_backup)"
+  type        = string
+  default     = ""
+}
+
+# Key Vault Module Overrides
+variable "key_vault_name_override" {
+  description = "Override for the name used in resource.azurerm_key_vault.default (modules/key_vault)"
+  type        = string
+  default     = ""
+}
+
+variable "etcd_key_name_override" {
+  description = "Override for the name used in resource.azurerm_key_vault_key.etcd (modules/key_vault)"
+  type        = string
+  default     = ""
+}
+
+variable "ssl_certificate_name_override" {
+  description = "Override for the name used in resource.azurerm_key_vault_certificate.ssl (modules/key_vault)"
+  type        = string
+  default     = ""
+}
+
+# Load Balancer Module Overrides
+variable "application_gateway_name_override" {
+  description = "Override for the name used in resource.azurerm_application_gateway.default (modules/load_balancer)"
+  type        = string
+  default     = ""
+}
+
+# Networking Module Overrides
+variable "virtual_network_name_override" {
+  description = "Override for the name used in resource.azurerm_virtual_network.vnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "aks_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.aks_subnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "private_endpoint_storage_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.private_endpoint_storage (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "private_endpoint_adls_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.private_endpoint_adls (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "azure_bastion_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.azure_bastion_subnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "vm_bastion_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.vm_bastion_subnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "database_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.database_subnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "app_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.app_subnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "app_gw_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.app_gw_subnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "public_ip_name_override" {
+  description = "Override for the name used in resource.azurerm_public_ip.default (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "jumpbox_public_ip_name_override" {
+  description = "Override for the name used in resource.azurerm_public_ip.jumpbox (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_public_ip_name_override" {
+  description = "Override for the name used in resource.azurerm_public_ip.ip_bastion_host (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "vnet_nsg_name_override" {
+  description = "Override for the name used in resource.azurerm_network_security_group.nsg_vnet (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "jumpbox_nsg_name_override" {
+  description = "Override for the name used in resource.azurerm_network_security_group.jumpbox (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_host_name_override" {
+  description = "Override for the name used in resource.azurerm_bastion_host.bastion (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "vm_nic_name_override" {
+  description = "Override for the name used in resource.azurerm_network_interface.vm_nic (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "linux_vm_name_override" {
+  description = "Override for the name used in resource.azurerm_linux_virtual_machine.linux_vm (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "database_private_dns_zone_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone.database (modules/networking)"
+  type        = string
+  default     = ""
+}
+
+variable "database_dns_link_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone_virtual_network_link.database (modules/networking)"
+  type        = string
+  default     = ""
+}

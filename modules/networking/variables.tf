@@ -108,3 +108,121 @@ variable "private_cluster_enabled" {
   description = "Flag to enable private cluster"
   default     = true
 }
+
+# ┏━┓┏━╸┏━┓┏━┓╻ ╻┏━┓┏━╸┏━╸   ┏┓╻┏━┓┏┳┓┏━╸   ┏━┓╻ ╻┏━╸┏━┓┏━┓╻╺┳┓┏━╸┏━┓
+# ┣┳┛┣╸ ┗━┓┃ ┃┃ ┃┣┳┛┃  ┣╸    ┃┗┫┣━┫┃┃┃┣╸    ┃ ┃┃┏┛┣╸ ┣┳┛┣┳┛┃ ┃┃┣╸ ┗━┓
+# ╹┗╸┗━╸┗━┛┗━┛┗━┛╹┗╸┗━╸┗━╸   ╹ ╹╹ ╹╹ ╹┗━╸   ┗━┛┗┛ ┗━╸╹┗╸╹┗╸╹╺┻┛┗━╸┗━┛
+
+variable "virtual_network_name_override" {
+  description = "Override for the name used in resource.azurerm_virtual_network.vnet"
+  type        = string
+  default     = ""
+}
+
+variable "aks_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.aks_subnet"
+  type        = string
+  default     = ""
+}
+
+variable "private_endpoint_storage_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.private_endpoint_storage"
+  type        = string
+  default     = ""
+}
+
+variable "private_endpoint_adls_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.private_endpoint_adls"
+  type        = string
+  default     = ""
+}
+
+variable "azure_bastion_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.azure_bastion_subnet"
+  type        = string
+  default     = ""
+}
+
+variable "vm_bastion_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.vm_bastion_subnet"
+  type        = string
+  default     = ""
+}
+
+variable "database_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.database_subnet"
+  type        = string
+  default     = ""
+}
+
+variable "app_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.app_subnet"
+  type        = string
+  default     = ""
+}
+
+variable "app_gw_subnet_name_override" {
+  description = "Override for the name used in resource.azurerm_subnet.app_gw_subnet"
+  type        = string
+  default     = ""
+}
+
+variable "public_ip_name_override" {
+  description = "Override for the name used in resource.azurerm_public_ip.default"
+  type        = string
+  default     = ""
+}
+
+variable "jumpbox_public_ip_name_override" {
+  description = "Override for the name used in resource.azurerm_public_ip.jumpbox"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_public_ip_name_override" {
+  description = "Override for the name used in resource.azurerm_public_ip.ip_bastion_host"
+  type        = string
+  default     = ""
+}
+
+variable "vnet_nsg_name_override" {
+  description = "Override for the name used in resource.azurerm_network_security_group.nsg_vnet"
+  type        = string
+  default     = ""
+}
+
+variable "jumpbox_nsg_name_override" {
+  description = "Override for the name used in resource.azurerm_network_security_group.jumpbox"
+  type        = string
+  default     = ""
+}
+
+variable "bastion_host_name_override" {
+  description = "Override for the name used in resource.azurerm_bastion_host.bastion"
+  type        = string
+  default     = ""
+}
+
+variable "vm_nic_name_override" {
+  description = "Override for the name used in resource.azurerm_network_interface.vm_nic"
+  type        = string
+  default     = ""
+}
+
+variable "linux_vm_name_override" {
+  description = "Override for the name used in resource.azurerm_linux_virtual_machine.linux_vm"
+  type        = string
+  default     = ""
+}
+
+variable "database_private_dns_zone_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone.database"
+  type        = string
+  default     = ""
+}
+
+variable "database_dns_link_name_override" {
+  description = "Override for the name used in resource.azurerm_private_dns_zone_virtual_network_link.database"
+  type        = string
+  default     = ""
+}

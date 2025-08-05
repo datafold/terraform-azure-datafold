@@ -1,5 +1,10 @@
+locals {
+  vnet_nsg_name    = var.vnet_nsg_name_override != "" ? var.vnet_nsg_name_override : "network-security-group"
+  jumpbox_nsg_name = var.jumpbox_nsg_name_override != "" ? var.jumpbox_nsg_name_override : "${var.deployment_name}-jumpbox-sg"
+}
+
 resource "azurerm_network_security_group" "nsg_vnet" {
-  name                = "network-security-group"
+  name                = local.vnet_nsg_name
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -7,7 +12,7 @@ resource "azurerm_network_security_group" "nsg_vnet" {
 }
 
 resource "azurerm_network_security_group" "jumpbox" {
-  name                = "${var.deployment_name}-jumpbox-sg"
+  name                = local.jumpbox_nsg_name
   location            = var.location
   resource_group_name = var.resource_group_name
 }

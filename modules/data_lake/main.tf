@@ -1,5 +1,13 @@
+locals {
+  adls_storage_account_name     = var.adls_storage_account_name_override != "" ? var.adls_storage_account_name_override : lower(replace("${var.deployment_name}-adls", "-", ""))
+  adls_filesystem_name          = var.adls_filesystem_name_override != "" ? var.adls_filesystem_name_override : "default"
+  adls_private_dns_zone_name    = var.adls_private_dns_zone_name_override != "" ? var.adls_private_dns_zone_name_override : "privatelink.dfs.core.windows.net"
+  adls_dns_link_name           = var.adls_dns_link_name_override != "" ? var.adls_dns_link_name_override : "${var.deployment_name}-adls-dns-link"
+  adls_private_endpoint_name   = var.adls_private_endpoint_name_override != "" ? var.adls_private_endpoint_name_override : "${var.deployment_name}-adls-pe"
+}
+
 resource "azurerm_storage_account" "adls" {
-  name                     = lower(replace("${var.deployment_name}-adls", "-", ""))
+  name                     = local.adls_storage_account_name
   resource_group_name      = var.resource_group_name
   location                 = var.location
   account_tier             = "Standard"
@@ -14,7 +22,7 @@ resource "azurerm_storage_account" "adls" {
 }
 
 resource "azurerm_storage_data_lake_gen2_filesystem" "adls" {
-  name               = "default"
+  name               = local.adls_filesystem_name
   storage_account_id = azurerm_storage_account.adls.id
 }
 
@@ -28,12 +36,12 @@ resource "azurerm_role_assignment" "storage_blob_data_contributor" {
 # ============PrivateLink for Storage Account====================
 # Private DNS Zone for ADLS
 resource "azurerm_private_dns_zone" "adls" {
-  name                = "privatelink.dfs.core.windows.net"
+  name                = local.adls_private_dns_zone_name
   resource_group_name = var.resource_group_name
 }
 
 resource "azurerm_private_dns_zone_virtual_network_link" "adls" {
-  name                  = "${var.deployment_name}-adls-dns-link"
+  name                  = local.adls_dns_link_name
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.adls.name
   virtual_network_id    = var.vpc.id
@@ -42,7 +50,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "adls" {
 
 # Private Endpoint Configuration
 resource "azurerm_private_endpoint" "adls" {
-  name                = "${var.deployment_name}-adls-pe"
+  name                = local.adls_private_endpoint_name
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.private_endpoint_adls_subnet.id

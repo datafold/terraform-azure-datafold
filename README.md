@@ -78,6 +78,44 @@ Setting up the infrastructure:
   * Check the settings made in the `main.tf` file. Maybe you want to set "datadog.install" to `false`. 
   * Check with your favourite kubernetes tool if you see the namespace and several datafold pods running there.
 
+## Resource Name Customization
+
+The terraform-azure-datafold module provides 41 resource name override variables that allow you to customize resource names according to your organization's naming standards or compliance requirements.
+
+### Key Benefits
+- **Compliance**: Meet organizational naming conventions
+- **Environment Separation**: Different naming patterns for dev/staging/prod
+- **Multi-tenant**: Unique identifiers for different customers/teams
+- **Integration**: Match existing resource naming patterns
+
+### Quick Example
+```hcl
+module "azure" {
+  source = "datafold/datafold/azure"
+
+  # Standard configuration...
+  deployment_name = "example-datafold"
+
+  # Custom resource group name (set directly, no override needed)
+  resource_group_name   = "prod-acme-datafold-rg"
+  create_resource_group = false
+
+  # Custom resource names via overrides
+  aks_cluster_name_override     = "prod-acme-datafold-aks"
+  storage_account_name_override = "prodacmedatafoldstorage"
+  key_vault_name_override       = "prod-acme-datafold-kv"
+  virtual_network_name_override = "prod-acme-datafold-vnet"
+}
+```
+
+### Important Notes
+- **Azure Storage Accounts**: Max 24 chars, lowercase letters/numbers only
+- **Key Vault Names**: Max 24 chars, alphanumeric and hyphens only
+- **Service Account Scopes**: Update role assignment scopes when using overrides
+- **Storage Account Consistency**: When overriding storage account names, ensure service account scopes reference the same name to avoid permission errors
+
+📖 **For complete documentation and examples**, see [examples/README.md](./examples/README.md)
+
 ### How to connect to the private AKS cluster
 
 Connecting to the AKS cluster requires 3 terminals in total.

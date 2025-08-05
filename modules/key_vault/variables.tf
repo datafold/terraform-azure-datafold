@@ -52,3 +52,25 @@ variable "acme_config" {
   type        = any
   description = "The configuration for the provider of the DNS challenge"
 }
+
+# ┏━┓┏━╸┏━┓┏━┓╻ ╻┏━┓┏━╸┏━╸   ┏┓╻┏━┓┏┳┓┏━╸   ┏━┓╻ ╻┏━╸┏━┓┏━┓╻╺┳┓┏━╸┏━┓
+# ┣┳┛┣╸ ┗━┓┃ ┃┃ ┃┣┳┛┃  ┣╸    ┃┗┫┣━┫┃┃┃┣╸    ┃ ┃┃┏┛┣╸ ┣┳┛┣┳┛┃ ┃┃┣╸ ┗━┓
+# ╹┗╸┗━╸┗━┛┗━┛┗━┛╹┗╸┗━╸┗━╸   ╹ ╹╹ ╹╹ ╹┗━╸   ┗━┛┗┛ ┗━╸╹┗╸╹┗╸╹╺┻┛┗━╸┗━┛
+
+variable "key_vault_name_override" {
+  description = "Override for the name used in resource.azurerm_key_vault.default"
+  type        = string
+  default     = ""
+}
+
+variable "etcd_key_name_override" {
+  description = "Override for the name used in resource.azurerm_key_vault_key.etcd"
+  type        = string
+  default     = ""
+}
+
+variable "ssl_certificate_name_override" {
+  description = "Override for the name used in resource.azurerm_key_vault_certificate.ssl"
+  type        = string
+  default     = ""
+}

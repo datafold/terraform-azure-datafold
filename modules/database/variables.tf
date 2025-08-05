@@ -74,3 +74,19 @@ variable "postgresql_major_version" {
   type        = string
   description = "PostgreSQL major version"
 }
+
+# ┏━┓┏━╸┏━┓┏━┓╻ ╻┏━┓┏━╸┏━╸   ┏┓╻┏━┓┏┳┓┏━╸   ┏━┓╻ ╻┏━╸┏━┓┏━┓╻╺┳┓┏━╸┏━┓
+# ┣┳┛┣╸ ┗━┓┃ ┃┃ ┃┣┳┛┃  ┣╸    ┃┗┫┣━┫┃┃┃┣╸    ┃ ┃┃┏┛┣╸ ┣┳┛┣┳┛┃ ┃┃┣╸ ┗━┓
+# ╹┗╸┗━╸┗━┛┗━┛┗━┛╹┗╸┗━╸┗━╸   ╹ ╹╹ ╹╹ ╹┗━╸   ┗━┛┗┛ ┗━╸╹┗╸╹┗╸╹╺┻┛┗━╸┗━┛
+
+variable "postgresql_server_name_override" {
+  description = "Override for the name used in resource.azurerm_postgresql_flexible_server.main"
+  type        = string
+  default     = ""
+}
+
+variable "postgresql_database_name_override" {
+  description = "Override for the name used in resource.azurerm_postgresql_flexible_server_database.main"
+  type        = string
+  default     = ""
+}

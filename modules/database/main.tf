@@ -1,6 +1,11 @@
+locals {
+  postgresql_server_name   = var.postgresql_server_name_override != "" ? var.postgresql_server_name_override : "${var.deployment_name}-db-server"
+  postgresql_database_name = var.postgresql_database_name_override != "" ? var.postgresql_database_name_override : var.database_name
+}
+
 # TODO: Do not hardcode, but create variables for e.g. version, sku_name, etc.
 resource "azurerm_postgresql_flexible_server" "main" {
-  name                          = "${var.deployment_name}-db-server"
+  name                          = local.postgresql_server_name
   resource_group_name           = var.resource_group_name
   location                      = var.location
   version                       = var.postgresql_major_version
@@ -18,7 +23,7 @@ resource "azurerm_postgresql_flexible_server" "main" {
 }
 
 resource "azurerm_postgresql_flexible_server_database" "main" {
-  name      = var.database_name
+  name      = local.postgresql_database_name
   server_id = azurerm_postgresql_flexible_server.main.id
   collation = "en_US.utf8"
   charset   = "utf8"
