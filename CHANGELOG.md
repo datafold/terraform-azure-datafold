@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+## [1.1.0](https://github.com/datafold/terraform-azure-datafold/compare/v1.0.0...v1.1.0) (2025-08-05)
+
+
+### Features
+
+* Add capabilities to override all resource names ([9048d44](https://github.com/datafold/terraform-azure-datafold/commit/9048d4449277b8eb630d86d862e9e69458e49074))
+
 ## 1.0.0 (2025-07-04)
 
 
