@@ -207,6 +207,21 @@ module "database" {
   database_subnet     = module.networking.database_subnet
   private_dns_zone_id = module.networking.database_private_dns_zone_id
 
+  # Existing database configuration
+  use_existing_database                = var.use_existing_database
+  existing_resource_group_name         = var.existing_database_resource_group_name
+  existing_postgresql_server_name      = var.existing_postgresql_server_name
+  existing_postgresql_database_name    = var.existing_postgresql_database_name
+
+  # VNet peering and private endpoint configuration
+  existing_vnet_resource_group_name    = var.existing_vnet_resource_group_name
+  existing_vnet_name                   = var.existing_vnet_name
+  existing_database_subnet_name        = var.existing_database_subnet_name
+  existing_private_dns_zone_name       = var.existing_private_dns_zone_name
+  our_vnet_id                          = module.networking.vpc.id
+  our_vnet_name                        = module.networking.vpc.name
+  our_private_endpoint_subnet_id       = module.networking.private_endpoint_storage_subnet.id
+
   database_username              = var.database_username
   database_name                  = var.database_name
   database_sku                   = var.database_sku
@@ -215,8 +230,10 @@ module "database" {
   postgresql_major_version       = var.postgresql_major_version
 
   # Resource name overrides
-  postgresql_server_name_override   = var.postgresql_server_name_override
-  postgresql_database_name_override = var.postgresql_database_name_override
+  postgresql_server_name_override          = var.postgresql_server_name_override
+  postgresql_database_name_override        = var.postgresql_database_name_override
+  postgresql_private_endpoint_name_override = var.postgresql_private_endpoint_name_override
+  postgresql_vnet_peering_name_prefix_override = var.postgresql_vnet_peering_name_prefix_override
 }
 
 module "clickhouse_backup" {
