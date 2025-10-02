@@ -1,10 +1,22 @@
 =======
 # Datafold Azure module
 
-This repository provisions resources on Azure, preparing them for a deployment of the
-application on an AKS cluster.
+This repository provisions infrastructure resources on Azure for deploying Datafold using the datafold-operator.
 
 ## About this module
+
+**⚠️ Important**: This module is now **optional**. If you already have AKS infrastructure in place, you can configure the required resources independently. This module is primarily intended for customers who need to set up the complete infrastructure stack for AKS deployment.
+
+The module provisions Azure infrastructure resources that are required for Datafold deployment. Application configuration is now managed through the `datafoldapplication` custom resource on the cluster using the datafold-operator, rather than through Terraform application directories.
+
+## Breaking Changes
+
+### Application Directory Removal
+
+- The "application" directory is no longer part of this repository
+- Application configuration is now managed through the `datafoldapplication` custom resource on the cluster
+
+**Note**: Unlike the AWS module, the Azure module always deploys an Application Gateway as the load balancer. This is because Azure Application Gateway provides better integration with AKS and is the recommended approach for Azure deployments.
 
 ## Prerequisites
 
@@ -14,22 +26,24 @@ application on an AKS cluster.
   * The application does not work without credentials supplied by sales
 * Access to our public helm-charts repository
 
-This deployment will create the following resources:
+The full deployment will create the following resources:
 
-* Azure VPC
-* Azure subnet
+* Azure Virtual Network
+* Azure subnets
 * Azure blob storage for clickhouse backups
-* Azure Application Gateway
+* Azure Application Gateway (optional, disabled by default)
+* Azure certificate (if load balancer is enabled)
 * Azure bastion
-* Azure jump vm
-* Azure certificate, unless preregistered and provided
-* Three Azure cloud volumes for local data storage
-* Azure Postgres database
+* Azure jump VM
+* Three Azure managed disks for local data storage
+* Azure PostgreSQL database
 * An AKS cluster
 * Service accounts for the AKS cluster to perform actions outside of its cluster boundary:
-  * Provisioning existing volumes
+  * Provisioning existing managed disks
   * Updating application gateway to point to specific pods in the cluster
   * Rescaling the nodegroup between 1-2 nodes
+
+**Infrastructure Dependencies**: For a complete list of required infrastructure resources and detailed deployment guidance, see the [Datafold Dedicated Cloud Azure Deployment Documentation](https://docs.datafold.com/datafold-deployment/dedicated-cloud/azure).
 
 ## Negative scope
 
@@ -39,28 +53,25 @@ This deployment will create the following resources:
 
 * See the example for a potential setup, which has dependencies on our helm-charts
 
-Create the bucket and dynamodb table for terraform state file:
+Create the storage account and container for terraform state file:
 
-* Use the files in `bootstrap` to create a terraform state bucket and a dynamodb lock table. Example provided is for AWS
+* Use the files in `bootstrap` to create a terraform state storage account and container.
 * Run `./run_bootstrap.sh` to create them. Enter the deployment_name when the question is asked.
   * The `deployment_name` is important. This is used for the k8s namespace and datadog unified logging tags and other places.
   * Suggestion: `company-datafold`
-* Transfer the name of that bucket and table into the `backend.hcl` (symlinked into both infra and application)
-* Set the `target_account_profile` and `region` where the bucket / table are stored.
+* Transfer the name of that storage account and container into the `backend.hcl`
+* Set the `resource_group_name` and `location` where the storage account is stored.
 * `backend.hcl` is only about where the terraform state file is located.
 
-The example directory contains a single deployment example, which cleanly separates the 
-underlying runtime infra from the application deployment into kubernetes. Some specific
-elements from the `infra` directory are copied and encrypted into the `application` directory.
+The example directory contains a single deployment example for infrastructure setup.
 
 Setting up the infrastructure:
 
 * It is easiest if you have full admin access in the target subscription.
-* Pre-create the certificate you want to use on the application gateway and validate it in your DNS.
 * Pre-create a symmetric encryption key that is used to encrypt/decrypt secrets of this deployment.
   * Use the alias instead of the `mrk` link. Put that into `locals.tf`
-* Refer to that certificate in main.tf using it's domain name: (Replace "datafold.acme.com")
-* Change the settings in locals.tf (the versions in infra and application are sym-linked)
+* **Certificate Requirements**: Pre-create and validate the certificate in your DNS, then refer to that certificate in main.tf using its domain name (Replace "datafold.acme.com")
+* Change the settings in locals.tf
   * provider_region = which region you want to deploy in.
   * resource_group_name = The resource group in which to deploy.
   * kms_profile = Can be the same profile, unless you want the encryption key elsewhere.
@@ -68,15 +79,34 @@ Setting up the infrastructure:
   * deployment_name = The name of the deployment, used in kubernetes namespace, container naming and datadog "deployment" Unified Tag)
   * azure_tenant_id = The tenant ID where to deploy.
   * azure_subscription_id = The ID of the subscription to deploy in.
-* Run `terraform init -backend-config=../backend.hcl` in both application and infra directory.
-* Our team will reach out to give you two secrets files:
-  * `secrets.yaml` goes into the `application` directory.
-  * Encrypt both files with sops and call both `secrets.yaml`
+* Run `terraform init -backend-config=../backend.hcl` in the infra directory.
+
 * Run `terraform apply` in `infra` directory. This should complete ok. 
-  * Check in the console if you see the load balancer, the EKS cluster, etc.
-* Run `terraform apply` in `application` directory.
-  * Check the settings made in the `main.tf` file. Maybe you want to set "datadog.install" to `false`. 
-  * Check with your favourite kubernetes tool if you see the namespace and several datafold pods running there.
+  * Check in the console if you see the AKS cluster, PostgreSQL database, etc.
+  * If you enabled load balancer deployment, check for the Application Gateway as well.
+
+**Application Deployment**: After infrastructure is ready, deploy the application using the datafold-operator. See the [Datafold Helm Charts repository](https://github.com/datafold/helm-charts) for detailed application deployment instructions.
+
+## Infrastructure Dependencies
+
+This module is designed to provide the complete infrastructure stack for Datafold deployment. However, if you already have AKS infrastructure in place, you can choose to configure the required resources independently.
+
+**Required Infrastructure Components**:
+- AKS cluster with appropriate node pools
+- Azure Database for PostgreSQL
+- Azure Storage account for ClickHouse backups
+- Azure managed disks for persistent storage (ClickHouse data, ClickHouse logs, Redis data)
+- Managed identities and role assignments for cluster operations
+- Azure Application Gateway (always deployed by this module)
+- Virtual Network and networking components
+- SSL certificate (must be pre-created and validated)
+
+**Alternative Approaches**:
+- **Use this module**: Provides complete infrastructure setup for new deployments
+- **Use existing infrastructure**: Configure required resources manually or through other means
+- **Hybrid approach**: Use this module for some components and existing infrastructure for others
+
+For detailed specifications of each required component, see the [Datafold Dedicated Cloud Azure Deployment Documentation](https://docs.datafold.com/datafold-deployment/dedicated-cloud/azure). For application deployment instructions, see the [Datafold Helm Charts repository](https://github.com/datafold/helm-charts).
 
 ## Resource Name Customization
 
@@ -158,5 +188,11 @@ All we need to is to run these commands:
 3. `./manage.py installation set-new-deployment-params`
 
 Now all containers should be up and running.
+
+## More information
+
+You can get more information from our documentation site:
+
+https://docs.datafold.com/datafold-deployment/dedicated-cloud/azure
 
 <!-- BEGIN_TF_DOCS -->
