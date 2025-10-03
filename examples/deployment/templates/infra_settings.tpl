@@ -4,8 +4,6 @@ clickhouse:
     s3_bucket: ${clickhouse_s3_bucket}
     s3_region: ${clickhouse_s3_region}
     s3_backup_role: ${clickhouse_s3_backup_role}
-    gcp_backup_account: ${gcp_backup_account}
-    azblob_backup_client_id: ${clickhouse_azblob_client_id}
     azblob_account_name: ${clickhouse_azblob_account_name}
     azblob_container: ${clickhouse_azblob_container}
   storage:
@@ -13,6 +11,9 @@ clickhouse:
     dataVolumeId: ${clickhouse_data_volume_id}
     logSize: ${clickhouse_logs_size}
     logVolumeId: ${clickhouse_log_volume_id}
+  secrets:
+    clickhouse_backup_sa: ${clickhouse_backup_sa}
+    azblob_account_key: ${clickhouse_azblob_account_key}
 
 redis:
   storage:
@@ -115,3 +116,8 @@ storage-worker:
   serviceAccount:
     name: ${storage_worker_service_account_name}
     roleArn: ${storage_worker_role_arn}
+
+dma:
+  serviceAccount:
+    name: ${dma_service_account_name}
+    roleArn: ${dma_role_arn}

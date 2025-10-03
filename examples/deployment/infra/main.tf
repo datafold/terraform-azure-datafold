@@ -50,8 +50,16 @@ module "azure" {
   # Load Balancer
   ssl_cert_name = local.ssl_cert_name
 
+  # Kubernetes
+  k8s_public_access_cidrs = ["0.0.0.0/0"]  # Configure based on your security requirements
+
   # Nodes
   node_pool_vm_size = "Standard_E8s_v3"
+  
+  # For larger deployments, you can configure additional node pools
+  # node_pool_vm_size_2 = "Standard_D4s_v3"
+  # node_pool_min_count_2 = 0
+  # node_pool_max_count_2 = 1
 
   service_accounts = {
     "${local.clickhouse_backup_sa}" = {
