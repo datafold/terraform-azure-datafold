@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+### [1.1.1](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.0...v1.1.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* Azure LB deploy ([aafbecd](https://github.com/datafold/terraform-azure-datafold/commit/aafbecdd80cdb63e11748b8fd29ccc14256df5f5))
+
 ## [1.1.0](https://github.com/datafold/terraform-azure-datafold/compare/v1.0.0...v1.1.0) (2025-08-05)
 
 
