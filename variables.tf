@@ -261,6 +261,12 @@ variable "jumpbox_custom_data" {
 # ┃  ┃ ┃┣━┫ ┃┃   ┣┻┓┣━┫┃  ┣━┫┃┗┫┃  ┣╸ ┣┳┛
 # ┗━╸┗━┛╹ ╹╺┻┛   ┗━┛╹ ╹┗━╸╹ ╹╹ ╹┗━╸┗━╸╹┗╸
 
+variable "deploy_lb" {
+  type        = bool
+  default     = true
+  description = "Flag to toggle load balancer creation. When false, load balancer should be deployed via helm-charts/kubernetes."
+}
+
 variable "gw_private_ip_address" {
   description = "The private IP address of the gateway. Should be within the gateway subnet CIDR range."
   type        = string

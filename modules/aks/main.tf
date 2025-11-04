@@ -22,8 +22,12 @@ resource "azurerm_kubernetes_cluster" "default" {
   oidc_issuer_enabled                 = true
   workload_identity_enabled           = var.workload_identity_on
 
-  ingress_application_gateway {
-    gateway_id = var.gateway.id
+  dynamic "ingress_application_gateway" {
+    for_each = var.gateway != null || var.app_gw_subnet != null ? [1] : []
+    content {
+      gateway_id = var.gateway != null ? var.gateway.id : null
+      subnet_id  = var.gateway == null && var.app_gw_subnet != null ? var.app_gw_subnet.id : null
+    }
   }
 
   storage_profile {
@@ -112,10 +116,13 @@ resource "azurerm_kubernetes_cluster_node_pool" "custom_node_pools" {
 }
 
 locals {
-  ingress_gateway_principal_id = azurerm_kubernetes_cluster.default.ingress_application_gateway.0.ingress_application_gateway_identity.0.object_id
+  ingress_gateway_enabled      = var.gateway != null || var.app_gw_subnet != null
+  ingress_gateway_principal_id = local.ingress_gateway_enabled ? azurerm_kubernetes_cluster.default.ingress_application_gateway.0.ingress_application_gateway_identity.0.object_id : null
 }
 
 resource "azurerm_role_assignment" "gateway" {
+  count = var.gateway != null ? 1 : 0
+
   depends_on           = [local.ingress_gateway_principal_id]
   scope                = var.gateway.id
   role_definition_name = "Contributor"
@@ -123,6 +130,8 @@ resource "azurerm_role_assignment" "gateway" {
 }
 
 resource "azurerm_role_assignment" "resource_group" {
+  count = local.ingress_gateway_enabled ? 1 : 0
+
   scope                = azurerm_kubernetes_cluster.default.node_resource_group_id
   role_definition_name = "Reader"
   principal_id         = local.ingress_gateway_principal_id
@@ -134,6 +143,8 @@ resource "azurerm_role_assignment" "resource_group" {
 }
 
 resource "azurerm_role_assignment" "app_gw_subnet" {
+  count = local.ingress_gateway_enabled && var.app_gw_subnet != null ? 1 : 0
+
   depends_on           = [local.ingress_gateway_principal_id]
   scope                = var.app_gw_subnet.id
   role_definition_name = "Contributor"
@@ -141,15 +152,19 @@ resource "azurerm_role_assignment" "app_gw_subnet" {
 }
 
 data "azurerm_user_assigned_identity" "agic" {
+  count = local.ingress_gateway_enabled ? 1 : 0
+
   name                = "ingressapplicationgateway-${local.cluster_name}"
   resource_group_name = azurerm_kubernetes_cluster.default.node_resource_group
 }
 
 resource "azurerm_role_assignment" "agic_identity_operator" {
+  count = local.ingress_gateway_enabled ? 1 : 0
+
   depends_on           = [local.ingress_gateway_principal_id]
   scope                = var.identity.id
   role_definition_name = "Managed Identity Operator"
-  principal_id         = data.azurerm_user_assigned_identity.agic.principal_id
+  principal_id         = data.azurerm_user_assigned_identity.agic[0].principal_id
 }
 
 # Create managed identities only for service accounts that need them

@@ -38,7 +38,9 @@ variable "identity" {
 }
 
 variable "gateway" {
-  type = object({ id = string })
+  type     = object({ id = string })
+  nullable = true
+  default  = null
 }
 
 variable "aks_subnet" {
@@ -46,7 +48,9 @@ variable "aks_subnet" {
 }
 
 variable "app_gw_subnet" {
-  type = object({ id = string })
+  type     = object({ id = string })
+  nullable = true
+  default  = null
 }
 
 variable "tags" {

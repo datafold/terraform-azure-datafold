@@ -174,6 +174,8 @@ module "key_vault" {
 }
 
 module "load_balancer" {
+  count = var.deploy_lb ? 1 : 0
+
   source = "./modules/load_balancer"
 
   deployment_name     = var.deployment_name
@@ -268,7 +270,7 @@ module "aks" {
 
   aks_subnet            = module.networking.aks_subnet
   app_gw_subnet         = module.networking.app_gw_subnet
-  gateway               = module.load_balancer.gateway
+  gateway               = var.deploy_lb ? module.load_balancer[0].gateway : null
   identity              = module.identity.identity
   etcd_key_vault_key_id = module.key_vault.etcd_key_id
 

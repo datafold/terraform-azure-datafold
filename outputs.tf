@@ -1,5 +1,5 @@
 locals {
-  default_unset_value = "notset"
+  default_unset_value = ""
 
   postgres = length(module.database) > 0 ? {
     database_name = module.database[0].postgres_database_name
@@ -40,7 +40,7 @@ output "vpc_cidr" {
 
 output "load_balancer_ips" {
   description = "The public IP addresses assigned to the load balancer"
-  value       = module.load_balancer.lb_ip
+  value       = length(module.load_balancer) > 0 ? module.load_balancer[0].lb_ip : local.default_unset_value
 }
 
 output "vnet_name" {

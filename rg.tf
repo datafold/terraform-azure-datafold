@@ -1,5 +1,5 @@
 locals {
-  resource_group_name = var.resource_group_name_override != "" ? var.resource_group_name_override : coalesce(var.resource_group_name, "${var.deployment_name}-rg")
+  resource_group_name = "${var.deployment_name}-rg"
 }
 
 # Create a resource group
