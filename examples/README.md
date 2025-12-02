@@ -55,7 +55,7 @@ module "azure" {
   # storage_account_name_override = local.storage_account_name
 
   service_accounts = {
-    "datafold-clickhouse" = {
+    "clickhouse" = {
       role_assignments = [
         {
           role  = "Storage Blob Data Contributor"

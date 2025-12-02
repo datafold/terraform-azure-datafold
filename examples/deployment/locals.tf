@@ -13,7 +13,7 @@ locals {
   redis_data_size       = "10"
   postgres_port         = "5432"
   ssl_cert_name         = "ssl"
-  clickhouse_backup_sa  = "datafold-clickhouse"
+  clickhouse_backup_sa  = "clickhouse"
 
   # Common tags to be assigned to all resources
   common_tags = {
