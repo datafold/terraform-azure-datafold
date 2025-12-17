@@ -67,3 +67,9 @@ variable "storage_dns_link_name_override" {
   type        = string
   default     = ""
 }
+
+variable "backup_lifecycle_expiration_days" {
+  type        = number
+  default     = 6
+  description = "Number of days after which clickhouse backup objects will expire and be deleted."
+}

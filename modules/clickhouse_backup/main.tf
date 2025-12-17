@@ -26,6 +26,24 @@ resource "azurerm_storage_container" "clickhouse_backup" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_management_policy" "clickhouse_backup" {
+  storage_account_id = azurerm_storage_account.storage.id
+
+  rule {
+    name    = "backup_retention"
+    enabled = true
+    filters {
+      blob_types   = ["blockBlob"]
+      prefix_match = [local.clickhouse_backup_container_name]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_modification_greater_than = var.backup_lifecycle_expiration_days
+      }
+    }
+  }
+}
+
 # ============PrivateLink for Storage Account====================
 resource "azurerm_private_dns_zone" "storage_account_dns" {
   name                = local.storage_private_dns_zone_name
