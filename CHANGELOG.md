@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+### [1.1.3](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.2...v1.1.3) (2025-12-17)
+
+
+### Bug Fixes
+
+* Update clickhouse backup retention ([7324f91](https://github.com/datafold/terraform-azure-datafold/commit/7324f91dd0c8cb1166542949a2eeaf69bc8c9c83))
+
 ### [1.1.2](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.1...v1.1.2) (2025-12-02)
 
 
