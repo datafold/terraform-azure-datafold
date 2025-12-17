@@ -233,11 +233,12 @@ module "clickhouse_backup" {
   identity                        = module.identity.identity
 
   # Resource name overrides
-  storage_account_name_override           = var.storage_account_name_override
+  storage_account_name_override             = var.storage_account_name_override
   clickhouse_backup_container_name_override = var.clickhouse_backup_container_name_override
-  storage_private_dns_zone_name_override = var.storage_private_dns_zone_name_override
-  storage_private_endpoint_name_override  = var.storage_private_endpoint_name_override
-  storage_dns_link_name_override          = var.storage_dns_link_name_override
+  storage_private_dns_zone_name_override    = var.storage_private_dns_zone_name_override
+  storage_private_endpoint_name_override    = var.storage_private_endpoint_name_override
+  storage_dns_link_name_override            = var.storage_dns_link_name_override
+  backup_lifecycle_expiration_days          = var.backup_lifecycle_expiration_days
 }
 
 module "data_lake" {
