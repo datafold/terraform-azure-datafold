@@ -548,6 +548,41 @@ variable "adls_private_endpoint_name_override" {
   default     = ""
 }
 
+# ╺┳╸┏━╸┏┳┓┏━┓┏━┓┏━┓╻
+#  ┃ ┣╸ ┃┃┃┣━┛┃ ┃┣┳┛┣┫
+#  ╹ ┗━╸╹ ╹╹  ┗━┛╹┗╸╹┗╸
+
+variable "deploy_temporal" {
+  type        = bool
+  default     = true
+  description = "Whether to deploy Temporal infrastructure resources (storage account + workload identity for postgres-pod)."
+}
+
+variable "temporal_postgres_namespace" {
+  type        = string
+  default     = "postgres-operator"
+  description = "Kubernetes namespace where the Temporal PostgreSQL CRD (and postgres-pod service account) is deployed."
+}
+
+variable "temporal_backup_lifecycle_expiration_days" {
+  type        = number
+  default     = 7
+  description = "Number of days after which Temporal PostgreSQL backup objects will expire and be deleted."
+}
+
+# Temporal Backup Module Overrides
+variable "temporal_storage_account_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_account.temporal_backup (modules/temporal_backup)"
+  type        = string
+  default     = ""
+}
+
+variable "temporal_backup_container_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_container.temporal_backup (modules/temporal_backup)"
+  type        = string
+  default     = ""
+}
+
 # ClickHouse Backup Module Overrides
 variable "storage_account_name_override" {
   description = "Override for the name used in resource.azurerm_storage_account.storage (modules/clickhouse_backup)"

@@ -126,6 +126,17 @@ output "adls_filesystem" {
   value       = try(local.adls.filesystem, local.default_unset_value)
 }
 
+# Temporal Backup Storage Information
+output "temporal_backup_storage_account_name" {
+  description = "The name of the Azure Storage account for Temporal PostgreSQL backups"
+  value       = coalesce(one(module.temporal_backup[*].storage_account_name), "not active")
+}
+
+output "temporal_backup_container_name" {
+  description = "The name of the Azure Blob container for Temporal PostgreSQL backups"
+  value       = coalesce(one(module.temporal_backup[*].container_name), "not active")
+}
+
 output "clickhouse_data_volume_id" {
   value = resource.azurerm_managed_disk.clickhouse_data.id
   description = "The volume ID where clickhouse data will be stored."
