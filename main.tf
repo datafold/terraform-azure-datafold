@@ -261,6 +261,35 @@ module "data_lake" {
   adls_private_endpoint_name_override    = var.adls_private_endpoint_name_override
 }
 
+module "temporal_backup" {
+  count  = var.deploy_temporal ? 1 : 0
+  source = "./modules/temporal_backup"
+
+  deployment_name     = var.deployment_name
+  resource_group_name = data.azurerm_resource_group.default.name
+  location            = data.azurerm_resource_group.default.location
+
+  backup_lifecycle_expiration_days        = var.temporal_backup_lifecycle_expiration_days
+  storage_account_name_override           = var.temporal_storage_account_name_override
+  container_name_override                 = var.temporal_backup_container_name_override
+}
+
+locals {
+  temporal_postgres_pod_service_account = var.deploy_temporal ? {
+    "postgres-pod" = {
+      namespace             = var.temporal_postgres_namespace
+      create_azure_identity = true
+      identity_name         = null
+      role_assignments = [{
+        role  = "Storage Blob Data Contributor"
+        scope = module.temporal_backup[0].storage_account_id
+      }]
+    }
+  } : {}
+
+  merged_service_accounts = merge(var.service_accounts, local.temporal_postgres_pod_service_account)
+}
+
 module "aks" {
   source = "./modules/aks"
 
@@ -288,7 +317,7 @@ module "aks" {
   private_cluster_enabled = var.private_cluster_enabled
   k8s_public_access_cidrs = var.k8s_public_access_cidrs
   workload_identity_on    = var.aks_workload_identity_enabled
-  service_accounts        = var.service_accounts
+  service_accounts        = local.merged_service_accounts
 
   # Resource name overrides
   aks_cluster_name_override = var.aks_cluster_name_override
