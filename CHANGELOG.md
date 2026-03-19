@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+### [1.1.4](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.3...v1.1.4) (2026-03-19)
+
+
+### Bug Fixes
+
+* Add temporal bucket ([4c3e8e5](https://github.com/datafold/terraform-azure-datafold/commit/4c3e8e5d8dc813a34f68c9acfe3b01672646d532))
+
 ### [1.1.3](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.2...v1.1.3) (2025-12-17)
 
 
