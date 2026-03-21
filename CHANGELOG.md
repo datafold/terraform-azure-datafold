@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+### [1.1.5](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.4...v1.1.5) (2026-03-21)
+
+
+### Bug Fixes
+
+* Update versions ([366cf09](https://github.com/datafold/terraform-azure-datafold/commit/366cf09782010b6759484e7af77bd4a8ac606985))
+
 ### [1.1.4](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.3...v1.1.4) (2026-03-19)
 
 
