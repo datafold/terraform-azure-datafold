@@ -332,7 +332,7 @@ variable "database_storage_mb" {
 
 variable "postgresql_major_version" {
   type        = string
-  default     = "15"
+  default     = "17"
   description = "PostgreSQL major version"
 }
 
