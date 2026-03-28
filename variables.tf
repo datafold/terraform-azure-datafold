@@ -19,6 +19,12 @@ variable "resource_group_name" {
   default     = ""
 }
 
+variable "resource_group_name_override" {
+  description = "Override for the name used in resource.azurerm_resource_group.default"
+  type        = string
+  default     = ""
+}
+
 variable "resource_group_tags" {
   description = "The tags to apply to the resource group"
   type        = map(string)
@@ -299,6 +305,54 @@ variable "create_database" {
   description = "Flag to toggle PostgreSQL database creation"
 }
 
+variable "use_existing_database" {
+  description = "Whether to use an existing PostgreSQL database instead of creating a new one. Only used when create_database is true."
+  type        = bool
+  default     = false
+}
+
+variable "existing_database_resource_group_name" {
+  description = "The name of the resource group containing the existing PostgreSQL database"
+  type        = string
+  default     = ""
+}
+
+variable "existing_postgresql_server_name" {
+  description = "The name of the existing PostgreSQL flexible server"
+  type        = string
+  default     = ""
+}
+
+variable "existing_postgresql_database_name" {
+  description = "The name of the existing PostgreSQL database"
+  type        = string
+  default     = ""
+}
+
+variable "existing_vnet_resource_group_name" {
+  description = "The name of the resource group containing the existing VNet with the PostgreSQL database"
+  type        = string
+  default     = ""
+}
+
+variable "existing_vnet_name" {
+  description = "The name of the existing VNet containing the PostgreSQL database"
+  type        = string
+  default     = ""
+}
+
+variable "existing_database_subnet_name" {
+  description = "The name of the subnet in the existing VNet where the PostgreSQL database is located"
+  type        = string
+  default     = ""
+}
+
+variable "existing_private_dns_zone_name" {
+  description = "The name of the existing private DNS zone for PostgreSQL (usually 'privatelink.postgres.database.azure.com')"
+  type        = string
+  default     = "privatelink.postgres.database.azure.com"
+}
+
 variable "database_username" {
   type        = string
   default     = "datafold"
@@ -465,6 +519,7 @@ variable "acme_config" {
 # ╹┗╸┗━╸┗━┛┗━┛┗━┛╹┗╸┗━╸┗━╸   ╹ ╹╹ ╹╹ ╹┗━╸   ┗━┛┗┛ ┗━╸╹┗╸╹┗╸╹╺┻┛┗━╸┗━┛
 
 # Root Level Resource Overrides
+# Note: resource_group_name_override is defined earlier in the file near resource_group_name
 
 variable "clickhouse_data_disk_name_override" {
   description = "Override for the name used in resource.azurerm_managed_disk.clickhouse_data"
@@ -513,6 +568,20 @@ variable "postgresql_server_name_override" {
 
 variable "postgresql_database_name_override" {
   description = "Override for the name used in resource.azurerm_postgresql_flexible_server_database.main (modules/database)"
+  type        = string
+  default     = ""
+}
+
+variable "postgresql_private_endpoint_name_override" {
+  description = "Override for the name used in resource.azurerm_private_endpoint.postgresql (modules/database)"
+  type        = string
+  default     = ""
+}
+
+# Note: DNS zone name override removed since we use existing DNS zone
+
+variable "postgresql_vnet_peering_name_prefix_override" {
+  description = "Override for the name prefix used in VNet peering resources (modules/database)"
   type        = string
   default     = ""
 }
