@@ -19,32 +19,36 @@ locals {
     for subnet in local.subnet_order : {
       name = subnet
       needs_calculation = length(lookup({
-        aks = var.aks_subnet_cidrs,
+        aks                      = var.aks_subnet_cidrs,
         private_endpoint_storage = var.private_endpoint_storage_subnet_cidrs,
-        azure_bastion = var.azure_bastion_subnet_cidrs,
-        vm_bastion = var.vm_bastion_subnet_cidrs,
-        database = var.database_subnet_cidrs,
-        app = var.app_subnet_cidrs,
-        app_gw = var.app_gw_subnet_cidrs,
-        adls = var.create_adls ? var.private_endpoint_adls_subnet_cidrs : ["dummy"]  # Only check ADLS if create_adls is true
+        azure_bastion            = var.azure_bastion_subnet_cidrs,
+        vm_bastion               = var.vm_bastion_subnet_cidrs,
+        database                 = var.database_subnet_cidrs,
+        app                      = var.app_subnet_cidrs,
+        app_gw                   = var.app_gw_subnet_cidrs,
+        adls                     = var.create_adls ? var.private_endpoint_adls_subnet_cidrs : ["dummy"] # Only check ADLS if create_adls is true
       }, subnet)) == 0
     }
   ]
 
-  # Create list of newbits only for subnets that need calculation
+  # newbits per subnet = (target_subnet_prefix) - (vpc_prefix)
+  #   target_subnet_prefix = 32 - log2(desired_subnet_size_in_addresses)
+  # The previous expression (vpc_size - log2(size)) only produced correct values when
+  # vpc_size happened to equal 16; any other prefix would yield an invalid (>32-bit) subnet
+  # extension, which broke /21 deployments.
   subnet_newbits = [
     for subnet in local.subnets_to_calculate :
     subnet.needs_calculation ?
-    local.vpc_size - ceil(log(lookup({
-      aks = var.aks_subnet_size,
+    (32 - ceil(log(lookup({
+      aks                      = var.aks_subnet_size,
       private_endpoint_storage = var.private_endpoint_storage_subnet_size,
-      azure_bastion = var.azure_bastion_subnet_size,
-      vm_bastion = var.vm_bastion_subnet_size,
-      database = var.database_subnet_size,
-      app = var.app_subnet_size,
-      app_gw = var.app_gw_subnet_size,
-      adls = var.private_endpoint_adls_subnet_size
-    }, subnet.name), 2)) : null
+      azure_bastion            = var.azure_bastion_subnet_size,
+      vm_bastion               = var.vm_bastion_subnet_size,
+      database                 = var.database_subnet_size,
+      app                      = var.app_subnet_size,
+      app_gw                   = var.app_gw_subnet_size,
+      adls                     = var.private_endpoint_adls_subnet_size
+    }, subnet.name), 2))) - local.vpc_size : null
   ]
 
   # Remove null values
@@ -121,25 +125,25 @@ module "networking" {
   k8s_public_access_cidrs               = var.k8s_public_access_cidrs
 
   # Resource name overrides
-  virtual_network_name_override                     = var.virtual_network_name_override
-  aks_subnet_name_override                          = var.aks_subnet_name_override
-  private_endpoint_storage_subnet_name_override     = var.private_endpoint_storage_subnet_name_override
-  private_endpoint_adls_subnet_name_override        = var.private_endpoint_adls_subnet_name_override
-  azure_bastion_subnet_name_override                = var.azure_bastion_subnet_name_override
-  vm_bastion_subnet_name_override                   = var.vm_bastion_subnet_name_override
-  database_subnet_name_override                     = var.database_subnet_name_override
-  app_subnet_name_override                          = var.app_subnet_name_override
-  app_gw_subnet_name_override                       = var.app_gw_subnet_name_override
-  public_ip_name_override                           = var.public_ip_name_override
-  jumpbox_public_ip_name_override                   = var.jumpbox_public_ip_name_override
-  bastion_public_ip_name_override                   = var.bastion_public_ip_name_override
-  vnet_nsg_name_override                            = var.vnet_nsg_name_override
-  jumpbox_nsg_name_override                         = var.jumpbox_nsg_name_override
-  bastion_host_name_override                        = var.bastion_host_name_override
-  vm_nic_name_override                              = var.vm_nic_name_override
-  linux_vm_name_override                            = var.linux_vm_name_override
-  database_private_dns_zone_name_override          = var.database_private_dns_zone_name_override
-  database_dns_link_name_override                  = var.database_dns_link_name_override
+  virtual_network_name_override                 = var.virtual_network_name_override
+  aks_subnet_name_override                      = var.aks_subnet_name_override
+  private_endpoint_storage_subnet_name_override = var.private_endpoint_storage_subnet_name_override
+  private_endpoint_adls_subnet_name_override    = var.private_endpoint_adls_subnet_name_override
+  azure_bastion_subnet_name_override            = var.azure_bastion_subnet_name_override
+  vm_bastion_subnet_name_override               = var.vm_bastion_subnet_name_override
+  database_subnet_name_override                 = var.database_subnet_name_override
+  app_subnet_name_override                      = var.app_subnet_name_override
+  app_gw_subnet_name_override                   = var.app_gw_subnet_name_override
+  public_ip_name_override                       = var.public_ip_name_override
+  jumpbox_public_ip_name_override               = var.jumpbox_public_ip_name_override
+  bastion_public_ip_name_override               = var.bastion_public_ip_name_override
+  vnet_nsg_name_override                        = var.vnet_nsg_name_override
+  jumpbox_nsg_name_override                     = var.jumpbox_nsg_name_override
+  bastion_host_name_override                    = var.bastion_host_name_override
+  vm_nic_name_override                          = var.vm_nic_name_override
+  linux_vm_name_override                        = var.linux_vm_name_override
+  database_private_dns_zone_name_override       = var.database_private_dns_zone_name_override
+  database_dns_link_name_override               = var.database_dns_link_name_override
 }
 
 module "identity" {
@@ -243,7 +247,7 @@ module "clickhouse_backup" {
 
 module "data_lake" {
   source = "./modules/data_lake"
-  count = var.create_adls ? 1 : 0
+  count  = var.create_adls ? 1 : 0
 
   deployment_name     = var.deployment_name
   resource_group_name = data.azurerm_resource_group.default.name
@@ -254,11 +258,11 @@ module "data_lake" {
   identity                     = module.identity.identity
 
   # Resource name overrides
-  adls_storage_account_name_override     = var.adls_storage_account_name_override
-  adls_filesystem_name_override          = var.adls_filesystem_name_override
-  adls_private_dns_zone_name_override    = var.adls_private_dns_zone_name_override
-  adls_dns_link_name_override            = var.adls_dns_link_name_override
-  adls_private_endpoint_name_override    = var.adls_private_endpoint_name_override
+  adls_storage_account_name_override  = var.adls_storage_account_name_override
+  adls_filesystem_name_override       = var.adls_filesystem_name_override
+  adls_private_dns_zone_name_override = var.adls_private_dns_zone_name_override
+  adls_dns_link_name_override         = var.adls_dns_link_name_override
+  adls_private_endpoint_name_override = var.adls_private_endpoint_name_override
 }
 
 module "temporal_backup" {
@@ -269,9 +273,9 @@ module "temporal_backup" {
   resource_group_name = data.azurerm_resource_group.default.name
   location            = data.azurerm_resource_group.default.location
 
-  backup_lifecycle_expiration_days        = var.temporal_backup_lifecycle_expiration_days
-  storage_account_name_override           = var.temporal_storage_account_name_override
-  container_name_override                 = var.temporal_backup_container_name_override
+  backup_lifecycle_expiration_days = var.temporal_backup_lifecycle_expiration_days
+  storage_account_name_override    = var.temporal_storage_account_name_override
+  container_name_override          = var.temporal_backup_container_name_override
 }
 
 locals {
@@ -339,12 +343,12 @@ resource "azurerm_managed_disk" "clickhouse_data" {
   disk_size_gb         = var.clickhouse_data_size
 
   # Configure performance tier for Premium/Ultra disks
-  disk_iops_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_iops : null
-  disk_mbps_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_throughput : null
+  disk_iops_read_write = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_iops : null
+  disk_mbps_read_write = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_throughput : null
 
   # Ultra SSD specific settings
-  disk_iops_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_iops : null
-  disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_throughput : null
+  disk_iops_read_only = var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_iops : null
+  disk_mbps_read_only = var.disk_sku == "UltraSSD_LRS" ? var.ch_data_disk_throughput : null
 
   tags = {
     Name = local.clickhouse_data_disk_name
@@ -364,12 +368,12 @@ resource "azurerm_managed_disk" "clickhouse_logs" {
   disk_size_gb         = var.clickhouse_logs_size
 
   # Configure performance tier for Premium/Ultra disks
-  disk_iops_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_iops : null
-  disk_mbps_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_throughput : null
+  disk_iops_read_write = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_iops : null
+  disk_mbps_read_write = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_throughput : null
 
   # Ultra SSD specific settings
-  disk_iops_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_iops : null
-  disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_throughput : null
+  disk_iops_read_only = var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_iops : null
+  disk_mbps_read_only = var.disk_sku == "UltraSSD_LRS" ? var.ch_logs_disk_throughput : null
 
   tags = {
     Name = local.clickhouse_logs_disk_name
@@ -389,12 +393,12 @@ resource "azurerm_managed_disk" "redis_data" {
   disk_size_gb         = var.redis_data_size
 
   # Configure performance tier for Premium/Ultra disks
-  disk_iops_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_iops : null
-  disk_mbps_read_write   = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_throughput : null
+  disk_iops_read_write = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_iops : null
+  disk_mbps_read_write = var.disk_sku == "Premium_LRS" || var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_throughput : null
 
   # Ultra SSD specific settings
-  disk_iops_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_iops : null
-  disk_mbps_read_only    = var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_throughput : null
+  disk_iops_read_only = var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_iops : null
+  disk_mbps_read_only = var.disk_sku == "UltraSSD_LRS" ? var.redis_disk_throughput : null
 
   tags = {
     Name = local.redis_data_disk_name
