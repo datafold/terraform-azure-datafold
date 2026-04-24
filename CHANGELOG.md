@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+### [1.1.6](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.5...v1.1.6) (2026-04-24)
+
+
+### Bug Fixes
+
+* Support non-/16 VPC CIDRs in subnet newbits formula ([f795c50](https://github.com/datafold/terraform-azure-datafold/commit/f795c50112711f0cb10de6df15f353894b095d6b))
+
 ### [1.1.5](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.4...v1.1.5) (2026-03-21)
 
 
