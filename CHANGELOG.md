@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+### [1.1.7](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.6...v1.1.7) (2026-04-29)
+
+
+### Bug Fixes
+
+* Upgrade azure provider ([dfd729d](https://github.com/datafold/terraform-azure-datafold/commit/dfd729d8da448e011c25befaf9473cb2e09aefb3))
+
 ### [1.1.6](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.5...v1.1.6) (2026-04-24)
 
 
