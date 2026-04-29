@@ -223,6 +223,8 @@ module "database" {
   # Resource name overrides
   postgresql_server_name_override   = var.postgresql_server_name_override
   postgresql_database_name_override = var.postgresql_database_name_override
+
+  availability_zone = var.database_availability_zone
 }
 
 module "clickhouse_backup" {

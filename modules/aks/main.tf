@@ -193,7 +193,6 @@ resource "azurerm_federated_identity_credential" "workload_credentials" {
   }
 
   name                = "${each.key}-federated-credential"
-  resource_group_name = var.resource_group_name
   audience            = ["api://AzureADTokenExchange"]
   issuer              = azurerm_kubernetes_cluster.default.oidc_issuer_url
   parent_id           = azurerm_user_assigned_identity.workload_identities[each.key].id

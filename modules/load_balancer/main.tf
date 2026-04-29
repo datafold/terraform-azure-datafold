@@ -14,6 +14,8 @@ resource "azurerm_application_gateway" "default" {
 
   tags = var.tags
 
+  # --- Things TF owns ---
+
   identity {
     type         = "UserAssigned"
     identity_ids = [var.identity.id]
@@ -34,19 +36,42 @@ resource "azurerm_application_gateway" "default" {
     subnet_id = var.app_gw_subnet.id
   }
 
-  frontend_port {
-    name = "port_443"
-    port = 443
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name
+    public_ip_address_id = var.public_ip_id
   }
+
+  ssl_certificate {
+    name                = var.ssl_cert_name
+    key_vault_secret_id = var.ssl_cert_id
+  }
+
+  ssl_policy {
+    policy_type = "Predefined"
+    policy_name = "AppGwSslPolicy20220101S"
+  }
+
+  private_link_configuration {
+    name = "${var.deployment_name}-private-link"
+
+    ip_configuration {
+      name                          = "primary"
+      subnet_id                     = var.app_gw_subnet.id
+      private_ip_address_allocation = "Dynamic"
+      primary                       = true
+    }
+  }
+
+  # --- Stubs to satisfy the API; AGIC will replace/augment ---
 
   frontend_port {
     name = "port_80"
     port = 80
   }
 
-  frontend_ip_configuration {
-    name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = var.public_ip_id
+  frontend_port {
+    name = "port_443"
+    port = 443
   }
 
   backend_address_pool {
@@ -62,79 +87,32 @@ resource "azurerm_application_gateway" "default" {
   }
 
   http_listener {
-    name                           = "http"
+    name                           = "stub-listener"
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = "port_80"
     protocol                       = "Http"
   }
 
-  http_listener {
-    name                           = "https"
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = "port_443"
-    protocol                       = "Https"
-    require_sni                    = "false"
-    ssl_certificate_name           = var.ssl_cert_name
-  }
-
   request_routing_rule {
-    name                        = "http-redirect"
-    rule_type                   = "Basic"
-    http_listener_name          = "http"
-    redirect_configuration_name = "http-to-https"
-    priority                    = 90
-  }
-
-  redirect_configuration {
-    name                 = "http-to-https"
-    redirect_type        = "Permanent"
-    target_listener_name = "https"
-    include_path         = true
-    include_query_string = true
-  }
-
-  request_routing_rule {
-    name                       = local.request_routing_rule_name_http
+    name                       = "stub-rule"
     rule_type                  = "Basic"
-    http_listener_name         = "https"
+    http_listener_name         = "stub-listener"
     backend_address_pool_name  = local.backend_address_pool_name
     backend_http_settings_name = local.http_setting_name
     priority                   = 100
   }
 
-  private_link_configuration {
-    name = "${var.deployment_name}-private-link"
-
-    ip_configuration {
-      name                          = "primary"
-      subnet_id                     = var.app_gw_subnet.id
-      private_ip_address_allocation = "Dynamic"
-      primary                       = true
-    }
-  }
-
-  ssl_certificate {
-    key_vault_secret_id = var.ssl_cert_id
-    name                = var.ssl_cert_name
-  }
-
-  ssl_policy {
-    policy_type = "Predefined"
-    policy_name = "AppGwSslPolicy20220101S"  # Latest secure policy
-  }
-
   lifecycle {
-    # K8S will be changing all of these settings so we ignore them.
-    # We really only needed this resource to assign a known public IP.
     ignore_changes = [
-      request_routing_rule,
-      probe,
-      backend_http_settings,
       backend_address_pool,
-      url_path_map,
-      frontend_port,
+      backend_http_settings,
       http_listener,
-      private_link_configuration,
+      request_routing_rule,
+      url_path_map,
+      probe,
+      redirect_configuration,
+      rewrite_rule_set,
+      frontend_port,
       tags,
     ]
   }
