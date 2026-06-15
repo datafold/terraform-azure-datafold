@@ -2,6 +2,13 @@
 
 See this file for notable changes between versions.
 
+## [1.2.0](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.7...v1.2.0) (2026-06-15)
+
+
+### Features
+
+* Generate and wire status check token ([6114d94](https://github.com/datafold/terraform-azure-datafold/commit/6114d94153a32a6dd048a26395353380325fdbce))
+
 ### [1.1.7](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.6...v1.1.7) (2026-04-29)
 
 
