@@ -33,6 +33,7 @@ output "infra_config" {
       redis_data_size                = local.redis_data_size,
       redis_data_volume_id           = module.azure.redis_data_volume_id,
       server_name                    = module.azure.domain_name,
+      status_check_token             = local.status_check_token,
       vpc_cidr                       = module.azure.vpc_cidr,
 
       # service accounts vars

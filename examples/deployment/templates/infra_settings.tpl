@@ -31,6 +31,7 @@ global:
   postgres:
     server: ${postgres_server}
   serverName: ${server_name}
+  statusCheckToken: "${status_check_token}"
   vpcCidr: ${vpc_cidr}
 
 nginx:
