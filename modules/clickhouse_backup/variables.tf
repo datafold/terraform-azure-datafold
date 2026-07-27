@@ -73,3 +73,25 @@ variable "backup_lifecycle_expiration_days" {
   default     = 6
   description = "Number of days after which clickhouse backup objects will expire and be deleted."
 }
+
+# ┏┳┓┏━╸┏┳┓┏━╸┏━┓┏━┓┏━┓╻ ╻   ┏┓ ┏━┓┏━╸╻┏ ╻ ╻┏━┓
+# ┃┃┃┣╸ ┃┃┃┃╺┓┣┳┛┣━┫┣━┛┣━┫   ┣┻┓┣━┫┃  ┣┻┓┃ ┃┣━┛
+# ╹ ╹┗━╸╹ ╹┗━┛╹┗╸╹ ╹╹  ╹ ╹   ┗━┛╹ ╹┗━╸╹┗╸┗━┛╹
+
+variable "memgraph_backup_enabled" {
+  type        = bool
+  default     = false
+  description = "Create the Memgraph DR backup container and its lifecycle retention rule on the storage account."
+}
+
+variable "memgraph_backup_container_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_container.memgraph_backup"
+  type        = string
+  default     = ""
+}
+
+variable "memgraph_backup_lifecycle_expiration_days" {
+  type        = number
+  default     = 30
+  description = "Number of days after which memgraph backup objects will expire and be deleted."
+}

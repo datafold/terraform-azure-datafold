@@ -626,6 +626,37 @@ variable "backup_lifecycle_expiration_days" {
   description = "Number of days after which clickhouse backup objects will expire and be deleted."
 }
 
+# Memgraph DR Backup (shares the clickhouse_backup storage account)
+variable "memgraph_backup_enabled" {
+  type        = bool
+  default     = false
+  description = "Create the Memgraph DR backup container, its lifecycle retention rule, and a workload identity for the worker service account."
+}
+
+variable "memgraph_backup_container_name_override" {
+  description = "Override for the name used in resource.azurerm_storage_container.memgraph_backup (modules/clickhouse_backup)"
+  type        = string
+  default     = ""
+}
+
+variable "memgraph_backup_lifecycle_expiration_days" {
+  type        = number
+  default     = 30
+  description = "Number of days after which memgraph backup objects will expire and be deleted."
+}
+
+variable "memgraph_backup_service_account_name" {
+  type        = string
+  default     = "worker"
+  description = "Kubernetes service account (running the app's backup job) that gets Storage Blob Data Contributor on the storage account."
+}
+
+variable "memgraph_backup_service_account_namespace" {
+  type        = string
+  default     = ""
+  description = "Namespace of the memgraph backup service account. Empty = the deployment name."
+}
+
 # Key Vault Module Overrides
 variable "key_vault_name_override" {
   description = "Override for the name used in resource.azurerm_key_vault.default (modules/key_vault)"

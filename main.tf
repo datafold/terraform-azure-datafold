@@ -245,6 +245,12 @@ module "clickhouse_backup" {
   storage_private_endpoint_name_override    = var.storage_private_endpoint_name_override
   storage_dns_link_name_override            = var.storage_dns_link_name_override
   backup_lifecycle_expiration_days          = var.backup_lifecycle_expiration_days
+
+  # Memgraph DR backups (shares this storage account; retention rules must live
+  # in the submodule's single management policy)
+  memgraph_backup_enabled                   = var.memgraph_backup_enabled
+  memgraph_backup_container_name_override   = var.memgraph_backup_container_name_override
+  memgraph_backup_lifecycle_expiration_days = var.memgraph_backup_lifecycle_expiration_days
 }
 
 module "data_lake" {
@@ -293,7 +299,25 @@ locals {
     }
   } : {}
 
-  merged_service_accounts = merge(var.service_accounts, local.temporal_postgres_pod_service_account)
+  # The app's nightly Memgraph backup job runs in the worker pods and uploads
+  # snapshots to the memgraph-backup container on the shared storage account.
+  memgraph_backup_worker_service_account = var.memgraph_backup_enabled ? {
+    (var.memgraph_backup_service_account_name) = {
+      namespace             = var.memgraph_backup_service_account_namespace != "" ? var.memgraph_backup_service_account_namespace : var.deployment_name
+      create_azure_identity = true
+      identity_name         = "datafold-memgraph-backup"
+      role_assignments = [{
+        role  = "Storage Blob Data Contributor"
+        scope = module.clickhouse_backup.storage_account_id
+      }]
+    }
+  } : {}
+
+  merged_service_accounts = merge(
+    var.service_accounts,
+    local.temporal_postgres_pod_service_account,
+    local.memgraph_backup_worker_service_account,
+  )
 }
 
 module "aks" {
