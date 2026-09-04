@@ -160,7 +160,7 @@ Connecting to the AKS cluster requires 3 terminals in total.
 deployment_name="acme-datafold"
 proxy_port="1081"
 az aks get-credentials --resource-group "${deployment_name}-rg" --name "${deployment_name}-cluster"
-kubectl config set clusters.azure-dev-datafold-cluster.proxy-url "socks5://localhost:${proxy_port}"
+kubectl config set "clusters.${deployment_name}-cluster.proxy-url" "socks5://localhost:${proxy_port}"
 kubectl config set-context --current --namespace="${deployment_name}"
 
  # Run in terminal 1: Open an Azure Bastion tunnel into VM

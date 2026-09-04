@@ -121,6 +121,8 @@ module "networking" {
   app_gw_subnet_cidrs                   = local.app_gw_subnet_cidrs
   private_endpoint_adls_subnet_cidrs    = local.private_endpoint_adls_subnet_cidrs
   jumpbox_custom_data                   = var.jumpbox_custom_data
+  jumpbox_vm_size                       = var.jumpbox_vm_size
+  jumpbox_image_sku                     = var.jumpbox_image_sku
   lb_is_public                          = var.lb_is_public
   k8s_public_access_cidrs               = var.k8s_public_access_cidrs
 
