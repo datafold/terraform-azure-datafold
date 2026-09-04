@@ -9,3 +9,7 @@ output "storage_account_id" {
 output "container_name" {
   value = azurerm_storage_container.temporal_backup.name
 }
+
+output "storage_account_key" {
+  value = azurerm_storage_account.temporal_backup.primary_access_key
+}

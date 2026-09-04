@@ -62,7 +62,7 @@ resource "azurerm_linux_virtual_machine" "linux_vm" {
   name                = local.linux_vm_name
   resource_group_name = var.resource_group_name
   location            = var.location
-  size                = "Standard_F2"
+  size                = var.jumpbox_vm_size
   admin_username      = "adminuser"
   custom_data         = var.jumpbox_custom_data
   network_interface_ids = [
@@ -82,7 +82,7 @@ resource "azurerm_linux_virtual_machine" "linux_vm" {
   source_image_reference {
     publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts"
+    sku       = var.jumpbox_image_sku
     version   = "latest"
   }
 

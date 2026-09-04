@@ -257,6 +257,18 @@ variable "jumpbox_custom_data" {
   default     = ""
 }
 
+variable "jumpbox_vm_size" {
+  description = "VM size for the jumpbox. Defaults to the historical Standard_F2 (Fsv1, 2016-era) - override per customer if that SKU is restricted/unavailable on their subscription."
+  type        = string
+  default     = "Standard_F2"
+}
+
+variable "jumpbox_image_sku" {
+  description = "Marketplace image SKU for the jumpbox (Canonical/0001-com-ubuntu-server-jammy). Defaults to the historical Gen1 '22_04-lts' - most modern VM sizes are Gen2-only, so a jumpbox_vm_size override normally needs the matching '22_04-lts-gen2' SKU here too."
+  type        = string
+  default     = "22_04-lts"
+}
+
 # ╻  ┏━┓┏━┓╺┳┓   ┏┓ ┏━┓╻  ┏━┓┏┓╻┏━╸┏━╸┏━┓
 # ┃  ┃ ┃┣━┫ ┃┃   ┣┻┓┣━┫┃  ┣━┫┃┗┫┃  ┣╸ ┣┳┛
 # ┗━╸┗━┛╹ ╹╺┻┛   ┗━┛╹ ╹┗━╸╹ ╹╹ ╹┗━╸┗━╸╹┗╸

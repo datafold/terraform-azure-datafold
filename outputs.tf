@@ -137,6 +137,12 @@ output "temporal_backup_container_name" {
   value       = coalesce(one(module.temporal_backup[*].container_name), "not active")
 }
 
+output "temporal_backup_storage_account_key" {
+  description = "The access key for the Temporal PostgreSQL backups Azure Storage account"
+  value       = coalesce(one(module.temporal_backup[*].storage_account_key), "not active")
+  sensitive   = true
+}
+
 output "clickhouse_data_volume_id" {
   value = resource.azurerm_managed_disk.clickhouse_data.id
   description = "The volume ID where clickhouse data will be stored."
