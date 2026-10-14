@@ -168,3 +168,14 @@ variable "aks_dns_prefix_override" {
   type        = string
   default     = ""
 }
+
+variable "container_insights" {
+  description = "Container logs to Log Analytics (ContainerLogV2) through Container insights; see container_insights.tf"
+  type = object({
+    enabled                    = optional(bool, false)
+    log_analytics_workspace_id = optional(string)
+    log_retention_days         = optional(number, 30)
+    streams                    = optional(list(string), ["Microsoft-ContainerLogV2", "Microsoft-KubeEvents", "Microsoft-KubePodInventory"])
+  })
+  default = {}
+}

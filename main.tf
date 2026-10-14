@@ -350,6 +350,7 @@ module "aks" {
   k8s_public_access_cidrs = var.k8s_public_access_cidrs
   workload_identity_on    = var.aks_workload_identity_enabled
   service_accounts        = local.merged_service_accounts
+  container_insights      = var.container_insights
 
   # Resource name overrides
   aks_cluster_name_override = var.aks_cluster_name_override
