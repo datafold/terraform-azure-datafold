@@ -2,6 +2,19 @@
 
 See this file for notable changes between versions.
 
+## [1.3.0](https://github.com/datafold/terraform-azure-datafold/compare/v1.2.0...v1.3.0) (2026-10-14)
+
+
+### Features
+
+* Add Memgraph DR backup container, retention, and identity ([4eeacb7](https://github.com/datafold/terraform-azure-datafold/commit/4eeacb720063190cced020945d3035af5b1f8c45))
+* Ship container logs to Log Analytics with Container insights ([3c7cdcf](https://github.com/datafold/terraform-azure-datafold/commit/3c7cdcfb1b2fcbd8f7f0f568f7bbe7550e1e9b08))
+
+
+### Bug Fixes
+
+* New options for deployment in azure ([6d21e11](https://github.com/datafold/terraform-azure-datafold/commit/6d21e11cdc31ac9064354ceade3ec1c4a5054f2d))
+
 ## [1.2.0](https://github.com/datafold/terraform-azure-datafold/compare/v1.1.7...v1.2.0) (2026-06-15)
 
 
