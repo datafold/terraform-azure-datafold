@@ -430,6 +430,23 @@ variable "aks_workload_identity_enabled" {
   description = "Flag to enable workload identity"
 }
 
+variable "container_insights" {
+  type = object({
+    enabled                    = optional(bool, false)
+    log_analytics_workspace_id = optional(string)
+    log_retention_days         = optional(number, 30)
+    streams                    = optional(list(string), ["Microsoft-ContainerLogV2", "Microsoft-KubeEvents", "Microsoft-KubePodInventory"])
+  })
+  default     = {}
+  description = <<-EOT
+    Ship every container's stdout to Log Analytics (ContainerLogV2) with the AKS
+    monitoring add-on and a data collection rule. Without
+    `log_analytics_workspace_id` the module creates a workspace
+    (<deployment>-logs) with `log_retention_days`. `streams` defaults to the
+    portal's "Logs and Events" preset (modules/aks/container_insights.tf).
+  EOT
+}
+
 variable "custom_node_pools" {
   type = list(object({
     name = string

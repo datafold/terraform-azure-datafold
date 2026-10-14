@@ -30,6 +30,15 @@ resource "azurerm_kubernetes_cluster" "default" {
     }
   }
 
+  # Container insights (container_insights.tf).
+  dynamic "oms_agent" {
+    for_each = var.container_insights.enabled ? [1] : []
+    content {
+      log_analytics_workspace_id      = local.container_insights_workspace_id
+      msi_auth_for_monitoring_enabled = true
+    }
+  }
+
   storage_profile {
     disk_driver_enabled         = true
     file_driver_enabled         = true

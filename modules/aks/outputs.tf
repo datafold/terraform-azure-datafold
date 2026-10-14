@@ -21,3 +21,8 @@ output "node_resource_group_id" {
   value = azurerm_kubernetes_cluster.default.node_resource_group
   description = "Auto-generated resource group with resources for managed cluster"
 }
+
+output "container_insights_workspace_id" {
+  value       = local.container_insights_workspace_id
+  description = "Log Analytics workspace that receives the cluster's container logs (ContainerLogV2), null when Container insights is off"
+}
